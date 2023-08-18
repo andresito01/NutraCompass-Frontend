@@ -1,13 +1,16 @@
 import React from "react";
 import { Modal, TouchableOpacity, Text, Pressable, View } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
-import { getAuth, signOut } from "firebase/auth";
 import { LinearGradient } from "expo-linear-gradient";
-
-const auth = getAuth();
+// Firebase API method imports
+import { loggingOut } from "../api/FirebaseAPI/firebaseMethods.js";
 
 function Settings() {
   const [modalVisible, setModalVisible] = React.useState(false);
+
+  const handleLogout = () => {
+    loggingOut();
+  };
   return (
     <View>
       <Pressable onPress={() => setModalVisible(true)}>
@@ -23,7 +26,7 @@ function Settings() {
               colors={["#141e30", "#243b55"]}
               style={{ flex: 1, borderRadius: 20 }}
             >
-              <Pressable onPress={() => signOut(auth)}>
+              <Pressable onPress={handleLogout}>
                 <View className="flex flex-row m-4">
                   <Feather name="log-out" color="white" size={"24"} />
                   <Text className="text-white text-xl">Logout</Text>

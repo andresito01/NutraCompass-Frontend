@@ -8,11 +8,11 @@ import {
   TextInput,
   Text,
   View,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-const auth = getAuth();
+// Firebase API method imports
+import { signIn } from "../api/FirebaseAPI/firebaseMethods.js";
 
 function SignInScreen({ navigation }) {
   const [value, setValue] = React.useState({
@@ -21,24 +21,37 @@ function SignInScreen({ navigation }) {
     error: "",
   });
 
-  async function signIn() {
+  const emptyState = () => {
+    setValue({
+      email: "",
+      password: "",
+      error: "",
+    });
+  };
+
+  const handleSignIn = () => {
+    // Sign in form validation
     if (value.email === "" || value.password === "") {
       setValue({
         ...value,
         error: "Email and password are mandatory.",
       });
+      Alert.alert("Email and password are mandatory.");
       return;
+    } else {
+      signIn(value.email, value.password);
+      emptyState();
     }
 
-    try {
-      await signInWithEmailAndPassword(auth, value.email, value.password);
-    } catch (error) {
-      setValue({
-        ...value,
-        error: error.message,
-      });
-    }
-  }
+    // try {
+    //   await signInWithEmailAndPassword(auth, value.email, value.password);
+    // } catch (error) {
+    //   setValue({
+    //     ...value,
+    //     error: error.message,
+    //   });
+    // }
+  };
 
   return (
     <View style={styles.container}>
@@ -77,7 +90,7 @@ function SignInScreen({ navigation }) {
               />
             </View>
           </View>
-          <Pressable style={styles.button} onPress={signIn}>
+          <Pressable style={styles.button} onPress={handleSignIn}>
             <Text style={styles.buttonText}>Sign In</Text>
           </Pressable>
           <Text style={styles.signupText}>

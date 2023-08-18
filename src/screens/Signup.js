@@ -8,11 +8,11 @@ import {
   TextInput,
   Text,
   View,
+  Alert,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-
-const auth = getAuth();
+// Firebase API method imports
+import { registration } from "../api/FirebaseAPI/firebaseMethods.js";
 
 function SignUpScreen({ navigation }) {
   const [value, setValue] = React.useState({
@@ -21,25 +21,28 @@ function SignUpScreen({ navigation }) {
     error: "",
   });
 
-  async function signUp() {
+  const emptyState = () => {
+    setValue({
+      email: "",
+      password: "",
+      error: "",
+    });
+  };
+
+  const handleSignUp = () => {
+    // Sign up form validation
     if (value.email === "" || value.password === "") {
       setValue({
         ...value,
         error: "Email and password are mandatory.",
       });
+      Alert.alert("Email and password are mandatory.");
       return;
+    } else {
+      registration(value.email, value.password);
+      emptyState();
     }
-
-    try {
-      await createUserWithEmailAndPassword(auth, value.email, value.password);
-      navigation.navigate("Sign In");
-    } catch (error) {
-      setValue({
-        ...value,
-        error: error.message,
-      });
-    }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -78,7 +81,7 @@ function SignUpScreen({ navigation }) {
               />
             </View>
           </View>
-          <Pressable style={styles.button} onPress={signUp}>
+          <Pressable style={styles.button} onPress={handleSignUp}>
             <Text style={styles.buttonText}>Sign Up</Text>
           </Pressable>
           <Text style={styles.signupText}>
