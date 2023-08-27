@@ -2,10 +2,11 @@ import React from "react";
 import { Modal, Text, View, Pressable } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/Home";
-import SettingsScreen from "../screens/Settings";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import HomeScreen from "../screens/Home";
+import SettingsScreen from "../screens/Settings";
+import FoodlogScreen from "../screens/Foodlog.js";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,12 +24,26 @@ export default function UserStack() {
           name="Home"
           component={HomeScreen}
           options={{
-            tabBarShowLabel: false,
+            tabBarShowLabel: true,
             tabBarIcon: ({ focused }) => (
               <Feather
                 name="home"
                 color={focused ? "white" : "gray"}
-                size={"24"}
+                size={24}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Foodlog"
+          component={FoodlogScreen}
+          options={{
+            tabBarShowLabel: true,
+            tabBarIcon: ({ focused }) => (
+              <Feather
+                name="coffee"
+                color={focused ? "white" : "gray"}
+                size={24}
               />
             ),
           }}
@@ -42,7 +57,7 @@ export default function UserStack() {
             },
           }}
           options={{
-            tabBarShowLabel: false,
+            tabBarShowLabel: true,
             tabBarIcon: () => <SettingsScreen />,
           }}
         />

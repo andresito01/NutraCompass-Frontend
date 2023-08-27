@@ -9,6 +9,8 @@ import {
   Text,
   View,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 // Firebase API method imports
@@ -54,57 +56,61 @@ function SignInScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={["#141e30", "#243b55"]}
-        style={styles.gradientContainer}
-      >
-        <View style={styles.contentContainer}>
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign In</Text>
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate("Welcome")}
-          >
-            Go to Welcome Screen
-          </Text>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <Icon style={styles.icon} name="email" size={18} color="gray" />
-              <TextInput
-                placeholder="Email"
-                value={value.email}
-                style={styles.input}
-                onChangeText={(text) => setValue({ ...value, email: text })}
-                autoCapitalize="none"
-              />
-            </View>
-            <View style={styles.inputWrapper}>
-              <Icon style={styles.icon} name="lock" size={18} color="gray" />
-              <TextInput
-                placeholder="Password"
-                style={styles.input}
-                onChangeText={(text) => setValue({ ...value, password: text })}
-                secureTextEntry={true}
-                autoCapitalize="none"
-              />
-            </View>
-          </View>
-          <Pressable style={styles.button} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
-          </Pressable>
-          <Text style={styles.signupText}>
-            Don't Have an account?{" "}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <LinearGradient
+          colors={["#141e30", "#243b55"]}
+          style={styles.gradientContainer}
+        >
+          <View style={styles.contentContainer}>
+            <Image source={logo} style={styles.logo} />
+            <Text style={styles.title}>Sign In</Text>
             <Text
-              style={styles.signupLink}
-              onPress={() => navigation.navigate("Sign Up")}
+              style={styles.link}
+              onPress={() => navigation.navigate("Welcome")}
             >
-              Sign Up
+              Go to Welcome Screen
             </Text>
-          </Text>
-        </View>
-      </LinearGradient>
-    </View>
+            <View style={styles.inputContainer}>
+              <View style={styles.inputWrapper}>
+                <Icon style={styles.icon} name="email" size={18} color="gray" />
+                <TextInput
+                  placeholder="Email"
+                  value={value.email}
+                  style={styles.input}
+                  onChangeText={(text) => setValue({ ...value, email: text })}
+                  autoCapitalize="none"
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Icon style={styles.icon} name="lock" size={18} color="gray" />
+                <TextInput
+                  placeholder="Password"
+                  style={styles.input}
+                  onChangeText={(text) =>
+                    setValue({ ...value, password: text })
+                  }
+                  secureTextEntry={true}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+            <Pressable style={styles.button} onPress={handleSignIn}>
+              <Text style={styles.buttonText}>Sign In</Text>
+            </Pressable>
+            <Text style={styles.signupText}>
+              Don't Have an account?{" "}
+              <Text
+                style={styles.signupLink}
+                onPress={() => navigation.navigate("Sign Up")}
+              >
+                Sign Up
+              </Text>
+            </Text>
+          </View>
+        </LinearGradient>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

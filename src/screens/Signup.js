@@ -9,13 +9,20 @@ import {
   Text,
   View,
   Alert,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
 // Firebase API method imports
 import { registration } from "../api/FirebaseAPI/firebaseMethods.js";
 
 function SignUpScreen({ navigation }) {
+  const [show, setShow] = React.useState(false);
   const [value, setValue] = React.useState({
+    firstName: "",
+    lastName: "",
+    dob: new Date(),
     email: "",
     password: "",
     error: "",
@@ -23,6 +30,9 @@ function SignUpScreen({ navigation }) {
 
   const emptyState = () => {
     setValue({
+      firstName: "",
+      lastName: "",
+      dob: new Date(),
       email: "",
       password: "",
       error: "",
@@ -37,65 +47,133 @@ function SignUpScreen({ navigation }) {
         error: "Email and password are mandatory.",
       });
       Alert.alert("Email and password are mandatory.");
-      return;
     } else {
-      registration(value.email, value.password);
+      registration(
+        value.firstName,
+        value.lastName,
+        value.dob,
+        value.email,
+        value.password
+      );
       emptyState();
+      setShow(false);
+    }
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || dob;
+    setValue({ ...value, dob: currentDate });
+  };
+
+  const showDatePicker = () => {
+    if (show === false) {
+      setShow(true);
+    } else if (show === true) {
+      setShow(false);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={["#141e30", "#243b55"]}
-        style={styles.gradientContainer}
-      >
-        <View style={styles.contentContainer}>
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>Sign Up</Text>
-          <Text
-            style={styles.link}
-            onPress={() => navigation.navigate("Welcome")}
-          >
-            Go to Welcome Screen
-          </Text>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputWrapper}>
-              <Icon style={styles.icon} name="email" size={18} color="gray" />
-              <TextInput
-                placeholder="Email"
-                value={value.email}
-                style={styles.input}
-                onChangeText={(text) => setValue({ ...value, email: text })}
-                autoCapitalize="none"
-              />
-            </View>
-            <View style={styles.inputWrapper}>
-              <Icon style={styles.icon} name="lock" size={18} color="gray" />
-              <TextInput
-                placeholder="Password"
-                style={styles.input}
-                onChangeText={(text) => setValue({ ...value, password: text })}
-                secureTextEntry={true}
-                autoCapitalize="none"
-              />
-            </View>
-          </View>
-          <Pressable style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>Sign Up</Text>
-          </Pressable>
-          <Text style={styles.signupText}>
-            Have an account?{" "}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <LinearGradient
+          colors={["#141e30", "#243b55"]}
+          style={styles.gradientContainer}
+        >
+          <View style={styles.contentContainer}>
+            <Image source={logo} style={styles.logo} />
+            <Text style={styles.title}>Sign Up</Text>
             <Text
-              style={styles.signupLink}
-              onPress={() => navigation.navigate("Sign In")}
+              style={styles.link}
+              onPress={() => navigation.navigate("Welcome")}
             >
-              Sign In
+              Go to Welcome Screen
             </Text>
-          </Text>
-        </View>
-      </LinearGradient>
-    </View>
+            <View style={styles.inputContainer}>
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  placeholder="First Name"
+                  value={value.firstName}
+                  style={styles.input}
+                  onChangeText={(text) =>
+                    setValue({ ...value, firstName: text })
+                  }
+                  autoCapitalize="none"
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  placeholder="Last Name"
+                  value={value.lastName}
+                  style={styles.input}
+                  onChangeText={(text) =>
+                    setValue({ ...value, lastName: text })
+                  }
+                  autoCapitalize="none"
+                />
+              </View>
+              <Pressable onPress={showDatePicker}>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    margin: 5,
+                  }}
+                >
+                  Select Date of Birth
+                </Text>
+              </Pressable>
+              <View style={styles.inputWrapper}>
+                {show && (
+                  <DateTimePicker
+                    value={value.dob}
+                    mode="date"
+                    display="spinner"
+                    onChange={handleDateChange}
+                  />
+                )}
+              </View>
+              <View style={styles.inputWrapper}>
+                <Icon style={styles.icon} name="email" size={18} color="gray" />
+                <TextInput
+                  placeholder="Email"
+                  value={value.email}
+                  style={styles.input}
+                  onChangeText={(text) => setValue({ ...value, email: text })}
+                  autoCapitalize="none"
+                  secureTextEntry={false}
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Icon style={styles.icon} name="lock" size={18} color="gray" />
+                <TextInput
+                  placeholder="Password"
+                  style={styles.input}
+                  onChangeText={(text) =>
+                    setValue({ ...value, password: text })
+                  }
+                  secureTextEntry={true}
+                  autoCapitalize="none"
+                />
+              </View>
+            </View>
+            <Pressable style={styles.button} onPress={handleSignUp}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </Pressable>
+            <Text style={styles.signupText}>
+              Have an account?{" "}
+              <Text
+                style={styles.signupLink}
+                onPress={() => navigation.navigate("Sign In")}
+              >
+                Sign In
+              </Text>
+            </Text>
+          </View>
+        </LinearGradient>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

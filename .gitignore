@@ -8,6 +8,9 @@ node_modules/
 dist/
 web-build/
 
+# Yarn
+.yarn/
+
 # Native
 *.orig.*
 *.jks
@@ -35,7 +38,10 @@ yarn-error.*
 *.tsbuildinfo
 
 #Firebase SDK
-config/keys.js
+src/config/keys.js
+
+# Features API Keys
+src/features/foodlog/api/EdamamFoodDatabaseAPI/keys.js
 
 # more
 .o

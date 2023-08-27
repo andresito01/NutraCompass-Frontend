@@ -1,19 +1,27 @@
+import { auth } from "../../config/firebase.js";
 import * as fb from "firebase/auth";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { Alert } from "react-native";
 
-export async function registration(email, password) {
-  try {
-    await fb.createUserWithEmailAndPassword(fb.getAuth(), email, password);
-    //const currentUser = firebase.auth().currentUser;
+// ALL METHODS ENGAGE WITH FIREBASE AND FIRESTORE DATABASE
 
-    // const db = firebase.firestore();
-    // db.collection('users')
-    //   .doc(currentUser.uid)
-    //   .set({
-    //     email: currentUser.email,
-    //     lastName: lastName,
-    //     firstName: firstName,
-    //   });
+// User Authentication Methods
+
+export async function registration(firstName, lastName, dob, email, password) {
+  try {
+    await fb.createUserWithEmailAndPassword(auth, email, password);
+
+    const currentUser = auth.currentUser;
+
+    const db = getFirestore();
+    const userRef = doc(db, "users", currentUser.uid);
+
+    await setDoc(userRef, {
+      email: currentUser.email,
+      firstName: firstName,
+      lastName: lastName,
+      dob: dob,
+    });
   } catch (err) {
     Alert.alert("There is something wrong!", err.message);
   }
@@ -34,3 +42,5 @@ export async function loggingOut() {
     Alert.alert("There is something wrong!", err.message);
   }
 }
+
+// Food Log Methods

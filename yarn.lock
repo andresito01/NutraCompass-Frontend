@@ -2791,6 +2791,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@jest/schemas@npm:^29.6.3":
+  version: 29.6.3
+  resolution: "@jest/schemas@npm:29.6.3"
+  dependencies:
+    "@sinclair/typebox": ^0.27.8
+  checksum: 910040425f0fc93cd13e68c750b7885590b8839066dfa0cd78e7def07bbb708ad869381f725945d66f2284de5663bbecf63e8fdd856e2ae6e261ba30b1687e93
+  languageName: node
+  linkType: hard
+
 "@jest/types@npm:^26.6.2":
   version: 26.6.2
   resolution: "@jest/types@npm:26.6.2"
@@ -2896,6 +2905,17 @@ __metadata:
   dependencies:
     lodash: ^4.17.21
   checksum: 16c65d48c340d8f1b892797bdd6ace4f90d916d16bed5023f2a5421240ead20e828031dfb1d07b8eb0e172a62f532c3c005287e723e30ee9a0c8a0d7d2e98953
+  languageName: node
+  linkType: hard
+
+"@koale/useworker@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "@koale/useworker@npm:4.0.2"
+  dependencies:
+    dequal: ^1.0.0
+  peerDependencies:
+    react: ^16.8.0
+  checksum: 5d0894979ca9f24db747df21e0ded53b7ee24f9db4cf714a18f9f9bab79af538554cc5915fe8bd7e89560a1abfac036679b9985bbfdd3f4ddc9d820c1b676c9b
   languageName: node
   linkType: hard
 
@@ -3285,6 +3305,15 @@ __metadata:
   bin:
     react-native: build/bin.js
   checksum: 6d9f6544521c72212a3ab5e76a94d98c65072b5d15af6f533e8d6e36068dceff3fee5c1d5014d0f856ab54c63658849ee6be59911e087e95ef361bb43bcb6ad2
+  languageName: node
+  linkType: hard
+
+"@react-native-community/datetimepicker@npm:7.2.0":
+  version: 7.2.0
+  resolution: "@react-native-community/datetimepicker@npm:7.2.0"
+  dependencies:
+    invariant: ^2.2.4
+  checksum: 4ec9de24573d654a2632818de15a1b7c6f41febbaa52aa543e7ef133f507b8b4fe8c0a08a0af34907c283b7be3cb9d5a52db216a2925c8eb96f52bf49a9f2b33
   languageName: node
   linkType: hard
 
@@ -5717,6 +5746,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dequal@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "dequal@npm:1.0.1"
+  checksum: 92a80c10ec52c256e306ef44c6640f0f2451edfba795b314aec90ee2770930f472c95e8f438b2fb80b0060033d0b5589f2ccb243c0ddd3e9a427c0faa92035c3
+  languageName: node
+  linkType: hard
+
 "destroy@npm:1.2.0, destroy@npm:^1.0.4":
   version: 1.2.0
   resolution: "destroy@npm:1.2.0"
@@ -6192,6 +6228,18 @@ __metadata:
     path-browserify: ^1.0.0
     url-parse: ^1.5.9
   checksum: 02607b67b8b53e47825ded6ca52eee47ae957cdc4b1501cdc0373bbd50ccfef605ba8a05a07ee88225622c7dc6054dfe1b64f03b21f09aaea7e1b4bf132d3ad7
+  languageName: node
+  linkType: hard
+
+"expo-camera@npm:~13.4.2":
+  version: 13.4.2
+  resolution: "expo-camera@npm:13.4.2"
+  dependencies:
+    "@koale/useworker": ^4.0.2
+    invariant: ^2.2.4
+  peerDependencies:
+    expo: "*"
+  checksum: 86f5cd1c049a0ff0db980667aa72cc4fc69455c0a3d22c8c11e1c13959a04db6b9705cf0615cdf0954f7a72831b9697c3d73e536fce7815913329cc70d7b5972
   languageName: node
   linkType: hard
 
@@ -10752,6 +10800,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pretty-format@npm:^29.6.3":
+  version: 29.6.3
+  resolution: "pretty-format@npm:29.6.3"
+  dependencies:
+    "@jest/schemas": ^29.6.3
+    ansi-styles: ^5.0.0
+    react-is: ^18.0.0
+  checksum: 4e1c0db48e65571c22e80ff92123925ff8b3a2a89b71c3a1683cfde711004d492de32fe60c6bc10eea8bf6c678e5cbe544ac6c56cb8096e1eb7caf856928b1c4
+  languageName: node
+  linkType: hard
+
 "process-nextick-args@npm:~2.0.0":
   version: 2.0.1
   resolution: "process-nextick-args@npm:2.0.1"
@@ -11207,6 +11266,21 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 3b592ff31d9dfde5e2ce967f85f3ad17a94f4f3bee2248a3dad9ec791e7cda72a431f86b468b3b2a70ebeffb49b462f8162668a58fb9ddabb10b5a369816850d
+  languageName: node
+  linkType: hard
+
+"react-native-vector-icons@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "react-native-vector-icons@npm:10.0.0"
+  dependencies:
+    prop-types: ^15.7.2
+    yargs: ^16.1.1
+  bin:
+    fa-upgrade.sh: bin/fa-upgrade.sh
+    fa5-upgrade: bin/fa5-upgrade.sh
+    fa6-upgrade: bin/fa6-upgrade.sh
+    generate-icon: bin/generate-icon.js
+  checksum: c4e39deb5218b6ba047c378217bbc7f24c1db153d2171e42176703a775049ed24f2a140f35d962d215265032722a24cba8acc83397ef6e14bd300db470609bf5
   languageName: node
   linkType: hard
 
@@ -11698,23 +11772,27 @@ __metadata:
   dependencies:
     "@babel/core": ^7.20.0
     "@react-native-async-storage/async-storage": 1.18.2
+    "@react-native-community/datetimepicker": 7.2.0
     "@react-navigation/bottom-tabs": ^6.5.8
     "@react-navigation/native": ^6.1.7
     "@react-navigation/stack": ^6.3.17
     autoprefixer: ^10.4.15
     expo: ~49.0.6
+    expo-camera: ~13.4.2
     expo-linear-gradient: 12.3.0
     expo-status-bar: ~1.6.0
     firebase: ^10.1.0
     firebase-tools: ^12.4.7
     nativewind: ^2.0.11
     postcss: ^8.4.27
+    pretty-format: ^29.6.3
     react: 18.2.0
     react-native: 0.72.3
     react-native-gesture-handler: ^2.12.1
     react-native-reanimated: 3.3.0
     react-native-safe-area-context: 4.6.3
     react-native-screens: ~3.22.0
+    react-native-vector-icons: ^10.0.0
     tailwindcss: 3.3.2
   languageName: unknown
   linkType: soft
@@ -13652,7 +13730,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^16.2.0":
+"yargs@npm:^16.1.1, yargs@npm:^16.2.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
   dependencies:
