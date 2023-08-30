@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Modal,
   View,
@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   FlatList,
   SafeAreaView,
   TouchableWithoutFeedback,
@@ -16,15 +15,13 @@ import {
 import prettyFormat from "pretty-format";
 
 // Edamam Food Database API Method Imports
-import {
-  searchFood,
-  searchFoodByBarcode,
-} from "../api/EdamamFoodDatabaseAPI/edamamMethods.js";
+import { searchFood } from "../api/EdamamFoodDatabaseAPI/edamamMethods.js";
 // Import Barcode Scanner Component
 import BarcodeScanner from "./BarcodeScanner.js";
 
 const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
   const [foodName, setFoodName] = useState("");
+  const foodNameInputRef = useRef(null);
   const [searchResults, setSearchResults] = useState([]);
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState(null);
@@ -35,22 +32,19 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
   //   setCalories("");
   // };
 
-  const handleBarcodeScanned = async (barcode) => {
-    try {
-      const foodBarcodeResults = await searchFoodByBarcode(barcode);
-      console.log(foodBarcodeResults);
-      // Update the state with the cleaned and unique results
-      setSearchResults(foodBarcodeResults.hints);
-      setScannedBarcode(barcode);
-      setIsBarcodeScannerVisible(false); // Close the barcode scanner modal
-    } catch (error) {
-      console.error("Error searching for food:", error);
-      Alert.alert("Error searching for food:", error);
-      // Handle error (e.g., display an error message)
+  const handleBarcodeScanned = (resultsOrErrorMessage) => {
+    if (Array.isArray(resultsOrErrorMessage)) {
+      // Handle successful barcode scanning and set the search results
+      setSearchResults(resultsOrErrorMessage);
+      setIsBarcodeScannerVisible(false);
+    } else {
+      // Handle error from barcode scanning and show the error message
+      console.log("FoodEntryModal: ", resultsOrErrorMessage);
     }
   };
 
   const handleFoodSearch = async () => {
+    Keyboard.dismiss(); // Dismiss the keyboard
     try {
       const foodSearchResults = await searchFood(foodName);
 
@@ -68,8 +62,7 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
       // Update the state with the cleaned and unique results
       setSearchResults(uniqueResults);
     } catch (error) {
-      console.error("Error searching for food:", error);
-      Alert.alert("Error searching for food:", error);
+      console.error("Data processing error:", error);
       // Handle error (e.g., display an error message)
     }
   };
@@ -106,7 +99,9 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Add Food Entry</Text>
             <TextInput
+              ref={foodNameInputRef}
               placeholder="Food Name"
+              placeholderTextColor="white"
               style={styles.input}
               value={foodName}
               onChangeText={setFoodName}
@@ -181,12 +176,25 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
   modalContent: {
-    width: "90%",
-    backgroundColor: "white",
-    padding: 20,
+    height: "74%",
+    width: "100%",
+    backgroundColor: "#0e1529",
+    paddingTop: 20,
+    paddingBottom: 0,
+    paddingRight: 20,
+    paddingLeft: 20,
     borderRadius: 8,
     maxHeight: "80%", // Set the maximum height of the modal
-    justifyContent: "center", // Center content vertically
+    //justifyContent: "center", // Center content vertically
+    borderColor: "rgba(255, 255, 255, 0.5)", // Semi-transparent white border color
+    borderWidth: 2,
+    shadowColor: "#FFFFFF", // White shadow
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
   },
   flatlist: {
     flex: 1,
@@ -195,17 +203,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 16,
+    color: "white",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "white",
+    color: "white",
     padding: 10,
     marginBottom: 12,
     width: "80%",
     borderRadius: 4,
   },
   modalButton: {
-    backgroundColor: "blue",
+    backgroundColor: "#007BFF",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 4,

@@ -14,7 +14,7 @@ function Settings() {
   return (
     <View>
       <Pressable onPress={() => setModalVisible(true)}>
-        <Feather name="menu" color="gray" size={24} />
+        <Feather name="menu" color="gray" size={35} />
       </Pressable>
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <TouchableOpacity
@@ -28,7 +28,7 @@ function Settings() {
             >
               <Pressable onPress={handleLogout}>
                 <View className="flex flex-row m-4">
-                  <Feather name="log-out" color="white" size={24} />
+                  <Feather name="log-out" color="white" size={30} />
                   <Text className="text-white text-xl">Logout</Text>
                 </View>
               </Pressable>

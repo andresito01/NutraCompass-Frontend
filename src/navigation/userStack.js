@@ -16,7 +16,16 @@ export default function UserStack() {
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { backgroundColor: "#0e1529" },
+          tabBarStyle: {
+            backgroundColor: "#0e1529",
+            height: "10%",
+            paddingBottom: 5,
+            paddingTop: 5,
+          },
+          tabBarLabelStyle: {
+            fontSize: 16,
+            marginTop: 5,
+          },
         }}
         sceneContainerStyle={{ backgroundColor: "#0e1529" }}
       >
@@ -29,7 +38,7 @@ export default function UserStack() {
               <Feather
                 name="home"
                 color={focused ? "white" : "gray"}
-                size={24}
+                size={35}
               />
             ),
           }}
@@ -43,7 +52,7 @@ export default function UserStack() {
               <Feather
                 name="coffee"
                 color={focused ? "white" : "gray"}
-                size={24}
+                size={35}
               />
             ),
           }}
