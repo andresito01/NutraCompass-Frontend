@@ -3,7 +3,7 @@ import { ScrollView, UIManager, LayoutAnimation } from "react-native";
 import SwipeableFoodEntryItem from "./SwipeableFoodEntryItem.js";
 
 const FoodEntryList = ({ foodEntryItems, setFoodEntryItems, mealType }) => {
-  console.log(foodEntryItems);
+  //console.log(foodEntryItems);
   const [isSwiping, setIsSwiping] = useState(false);
 
   useEffect(() => {

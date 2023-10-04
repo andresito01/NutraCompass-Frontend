@@ -124,9 +124,7 @@ const SwipeableFoodEntryItem = ({
       >
         <View style={styles.entryInfo}>
           <Text style={styles.entryFoodNameText}>{itemData.foodName}</Text>
-          <Text
-            style={styles.entryCaloriesText}
-          >{`${itemData.calories} cal`}</Text>
+          <Text style={styles.entryCaloriesText}>{itemData.calories}</Text>
         </View>
       </Animated.View>
 

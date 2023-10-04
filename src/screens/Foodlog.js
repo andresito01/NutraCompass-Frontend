@@ -285,7 +285,7 @@ export default function FoodlogScreen() {
               </Text>
             </View>
             <FoodEntryList
-              foodEntryItems={breakfastEntries}
+              foodEntryItems={filteredBreakfastEntries}
               setFoodEntryItems={setBreakfastEntries}
               mealType={"breakfast"}
             />
@@ -332,22 +332,11 @@ export default function FoodlogScreen() {
                 {calculateTotalCalories(filteredDinnerEntries)}
               </Text>
             </View>
-            {filteredDinnerEntries.map((entry, index) => (
-              <View key={index} style={styles.entry}>
-                <View style={styles.entryInfo}>
-                  <Text style={styles.entryFoodNameText}>{entry.foodName}</Text>
-                  <Text
-                    style={styles.entryCaloriesText}
-                  >{`${entry.calories} cal`}</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.deleteButton}
-                  onPress={() => handleDeleteEntry("dinner", index)}
-                >
-                  <Text style={styles.deleteButtonText}>Delete</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+            <FoodEntryList
+              foodEntryItems={filteredDinnerEntries}
+              setFoodEntryItems={setDinnerEntries}
+              mealType={"dinner"}
+            />
             <Button
               style={styles.addButton}
               mode="elevated"
