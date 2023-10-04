@@ -1,43 +1,48 @@
-import React from "react";
-import { Modal, TouchableOpacity, Text, Pressable, View } from "react-native";
+import React, { useContext } from "react";
+import { Text, View, Pressable } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
-// Firebase API method imports
+import { useTheme } from "react-native-paper";
 import { loggingOut } from "../api/FirebaseAPI/firebaseMethods.js";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import settingsScreenStyles from "./styles/settingsScreenStyles.js";
+import { useThemeContext } from "../context/ThemeContext.js";
 
-function Settings() {
-  const [modalVisible, setModalVisible] = React.useState(false);
+function SettingsScreen() {
+  const styles = settingsScreenStyles();
+  const paperTheme = useTheme();
+  // Access the toggleTheme function using useContext
+  const { toggleTheme } = useThemeContext();
 
   const handleLogout = () => {
     loggingOut();
   };
+
   return (
-    <View>
-      <Pressable onPress={() => setModalVisible(true)}>
-        <Feather name="menu" color="gray" size={35} />
-      </Pressable>
-      <Modal animationType="slide" transparent={true} visible={modalVisible}>
-        <TouchableOpacity
-          onPress={() => setModalVisible(!modalVisible)}
-          style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <View className="h-[30%] mt-auto border rounded-t-3xl ">
-            <LinearGradient
-              colors={["#141e30", "#243b55"]}
-              style={{ flex: 1, borderRadius: 20 }}
-            >
-              <Pressable onPress={handleLogout}>
-                <View className="flex flex-row m-4">
-                  <Feather name="log-out" color="white" size={30} />
-                  <Text className="text-white text-xl">Logout</Text>
-                </View>
-              </Pressable>
-            </LinearGradient>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+    <View style={styles.container}>
+      <View style={[styles.row, paperTheme.shadows.small]}>
+        <Pressable style={{ padding: 10 }} onPress={handleLogout}>
+          <Feather name="log-out" color={paperTheme.colors.text} size={30} />
+        </Pressable>
+        <Text style={[styles.text, { color: paperTheme.colors.text }]}>
+          Logout
+        </Text>
+      </View>
+
+      <View style={[styles.row, paperTheme.shadows.small]}>
+        <Pressable style={{ padding: 10 }} onPress={toggleTheme}>
+          <FontAwesome
+            name={paperTheme.dark ? "moon-o" : "sun-o"}
+            size={30}
+            color={paperTheme.colors.text}
+          />
+        </Pressable>
+        <Text style={[styles.text, { color: paperTheme.colors.text }]}>
+          Switch To {paperTheme.dark ? "Light" : "Dark"} Mode
+        </Text>
+      </View>
     </View>
   );
 }
 
-export default Settings;
+export default SettingsScreen;

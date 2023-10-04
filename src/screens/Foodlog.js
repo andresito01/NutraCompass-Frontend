@@ -3,17 +3,22 @@ import {
   Text,
   View,
   SafeAreaView,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Modal,
 } from "react-native";
+import { useTheme, Card, Button, FAB } from "react-native-paper"; // Import Paper components
 import { useAuth } from "../hooks/useAuth";
 import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
 import { Calendar } from "react-native-calendars";
 import { Feather } from "@expo/vector-icons"; // Example of using Feather icons
+import { AutoFocus } from "expo-camera";
+import foodlogScreenStyles from "./styles/foodlogScreenStyles.js";
+import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 
 export default function FoodlogScreen() {
+  const styles = foodlogScreenStyles(); // Use the imported styles
+  const paperTheme = useTheme();
   const { user } = useAuth();
 
   // State Management
@@ -27,13 +32,20 @@ export default function FoodlogScreen() {
   );
   const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
 
+  //const [dateInfo, setDateInfo] = useState("null")
   const handleCalendarToggle = () => {
     setIsCalendarModalVisible(!isCalendarModalVisible);
   };
 
   const handleDateChange = (newDate) => {
-    console.log(newDate);
-    setSelectedDate(newDate);
+    console.log("newDate: ", newDate);
+    if (newDate.dateString) {
+      console.log("Date set to: ", newDate.dateString);
+      setSelectedDate(newDate.dateString); // Use newDate.dateString if it exists
+    } else {
+      console.log("Date set to: ", newDate);
+      setSelectedDate(newDate); // Assume newDate is already in string format
+    }
     setIsCalendarModalVisible(false); // Close the calendar modal after date selection
     // You might also want to fetch food logs associated with the new date here
   };
@@ -42,6 +54,9 @@ export default function FoodlogScreen() {
   const subtractDay = (date) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() - 1);
+    // Set the time zone offset
+    const timeZoneOffset = newDate.getTimezoneOffset();
+    newDate.setMinutes(newDate.getMinutes() + timeZoneOffset);
     return newDate;
   };
 
@@ -49,13 +64,57 @@ export default function FoodlogScreen() {
   const addDay = (date) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + 1);
+    // Set the time zone offset
+    const timeZoneOffset = newDate.getTimezoneOffset();
+    newDate.setMinutes(newDate.getMinutes() + timeZoneOffset);
     return newDate;
   };
 
-  const getCurrentDate = () => {
+  const getCurrentDate = (date) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
-    const selectedDateObj = new Date(selectedDate);
+    console.log("Date: ", date);
+    const selectedDateObj = new Date(date);
+    console.log("SelectedDateObject: ", selectedDateObj);
+    // Set the time zone offset
+    const timeZoneOffset = selectedDateObj.getTimezoneOffset();
+    selectedDateObj.setMinutes(selectedDateObj.getMinutes() + timeZoneOffset);
+    console.log(
+      "Current date set to: ",
+      selectedDateObj.toLocaleDateString(undefined, options)
+    );
     return selectedDateObj.toLocaleDateString(undefined, options);
+  };
+
+  const getDateInfo = (date) => {
+    console.log("Date Type Check: ", date);
+    if (typeof date === Date) {
+      date = date.toISOString().split("T")[0];
+    }
+
+    console.log("getDateInfo: ", date);
+
+    const currentDate = new Date();
+    // Set the time zone offset
+    const timeZoneOffset = currentDate.getTimezoneOffset();
+    currentDate.setMinutes(currentDate.getMinutes() + timeZoneOffset);
+    const currentDateStr = currentDate.toISOString().split("T")[0];
+    //const dateStr = date.split("T")[0]; // Convert the input date to string format
+
+    console.log("Real Time Current Date", currentDateStr);
+    console.log(
+      "Real Time Current Date + 1",
+      addDay(currentDate).toISOString().split("T")[0]
+    );
+    console.log("Date:", date);
+    if (date === currentDateStr) {
+      return "Today";
+    } else if (date === addDay(currentDate).toISOString().split("T")[0]) {
+      return "Tomorrow";
+    } else if (date === subtractDay(currentDate).toISOString().split("T")[0]) {
+      return "Yesterday";
+    } else {
+      return "";
+    }
   };
 
   const calculateTotalCalories = (entries) => {
@@ -67,24 +126,6 @@ export default function FoodlogScreen() {
     setIsModalVisible(true); // Show modal
   };
 
-  const handleDeleteEntry = (mealType, index) => {
-    if (mealType === "breakfast") {
-      const updatedEntries = [...breakfastEntries];
-      updatedEntries.splice(index, 1);
-      setBreakfastEntries(updatedEntries);
-    } else if (mealType === "lunch") {
-      const updatedEntries = [...lunchEntries];
-      updatedEntries.splice(index, 1);
-      setLunchEntries(updatedEntries);
-    } else if (mealType === "dinner") {
-      const updatedEntries = [...dinnerEntries];
-      updatedEntries.splice(index, 1);
-      setDinnerEntries(updatedEntries);
-    }
-  };
-
-  // Food Entry Modal Methods
-
   const handleSaveEntry = (mealType, newFoodName, newFoodCalories) => {
     const newEntry = {
       date: selectedDate,
@@ -93,11 +134,17 @@ export default function FoodlogScreen() {
     };
 
     if (mealType === "breakfast") {
-      setBreakfastEntries([...breakfastEntries, newEntry]);
+      const updatedEntries = [...breakfastEntries, newEntry];
+
+      setBreakfastEntries(updatedEntries);
     } else if (mealType === "lunch") {
-      setLunchEntries([...lunchEntries, newEntry]);
+      const updatedEntries = [...lunchEntries, newEntry];
+
+      setLunchEntries(updatedEntries);
     } else if (mealType === "dinner") {
-      setDinnerEntries([...dinnerEntries, newEntry]);
+      const updatedEntries = [...dinnerEntries, newEntry];
+
+      setDinnerEntries(updatedEntries);
     }
 
     setIsModalVisible(false); // Hide modal
@@ -122,23 +169,35 @@ export default function FoodlogScreen() {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView
-        contentContainerStyle={styles.containerContent}
-        style={styles.container}
+      {/* Date Section */}
+      <Card
+        style={{
+          ...styles.section,
+          marginBottom: 0,
+          backgroundColor: paperTheme.colors.background,
+        }}
       >
-        <View style={styles.header}>
+        <Card.Content>
           <View style={styles.headerDateContainer}>
             {/* Arrow button to go back one day */}
             <TouchableOpacity
               onPress={() => handleDateChange(subtractDay(selectedDate))}
             >
-              <Feather name="chevron-left" size={24} color="white" />
+              <Feather
+                name="chevron-left"
+                size={28}
+                color={paperTheme.dark ? "white" : "black"}
+              />
             </TouchableOpacity>
 
             {/* Date and calendar icon */}
             <TouchableOpacity onPress={handleCalendarToggle}>
               <View style={styles.calendarModalButton}>
-                <Feather name="calendar" size={24} color="white" />
+                <Feather
+                  name="calendar"
+                  size={24}
+                  color={paperTheme.dark ? "white" : "black"}
+                />
                 <Text style={styles.date}>{getCurrentDate(selectedDate)}</Text>
               </View>
             </TouchableOpacity>
@@ -147,114 +206,157 @@ export default function FoodlogScreen() {
             <TouchableOpacity
               onPress={() => handleDateChange(addDay(selectedDate))}
             >
-              <Feather name="chevron-right" size={24} color="white" />
+              <Feather
+                name="chevron-right"
+                size={28}
+                color={paperTheme.dark ? "white" : "black"}
+              />
             </TouchableOpacity>
           </View>
-          <Text style={styles.totalDayCalories}>
-            Total Calories Today:{" "}
-            {calculateTotalCalories([
-              ...filteredBreakfastEntries,
-              ...filteredLunchEntries,
-              ...filteredDinnerEntries,
-            ])}
-          </Text>
-        </View>
 
-        {/* Breakfast Section */}
-        <View style={styles.section}>
+          <Text style={styles.dateInfo}>{getDateInfo(selectedDate)}</Text>
+        </Card.Content>
+      </Card>
+
+      {/* Total Day Calories Progress Section */}
+      <Card style={styles.section}>
+        <Card.Content>
           <View style={styles.sectionHeaderContainer}>
-            <Text style={styles.sectionTitle}>Breakfast</Text>
-            <Text style={styles.totalCalories}>
-              Total Calories: {calculateTotalCalories(filteredBreakfastEntries)}
-            </Text>
+            <Text style={styles.sectionTitle}>Calories Remaining</Text>
           </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleAddEntry("breakfast")}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+            }}
           >
-            <Text style={styles.addButtonLabel}>Add Food</Text>
-          </TouchableOpacity>
-          {filteredBreakfastEntries.map((entry, index) => (
-            <View key={index} style={styles.entry}>
-              <View style={styles.entryInfo}>
-                <Text style={styles.entryFoodNameText}>{entry.foodName}</Text>
-                <Text
-                  style={styles.entryCaloriesText}
-                >{`${entry.calories} cal`}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDeleteEntry("breakfast", index)}
-              >
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
+            <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
+              <Text style={styles.totalDayCalories}>2700 {"      - "}</Text>
+              <Text style={styles.totalDayCaloriesProgressSectionText}>
+                Goal
+              </Text>
             </View>
-          ))}
-        </View>
+            <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
+              <Text style={styles.totalDayCalories}>
+                {calculateTotalCalories([
+                  ...filteredBreakfastEntries,
+                  ...filteredLunchEntries,
+                  ...filteredDinnerEntries,
+                ])}
+                {"      + "}
+              </Text>
+              <Text style={styles.totalDayCaloriesProgressSectionText}>
+                Food
+              </Text>
+            </View>
+            <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
+              <Text style={styles.totalDayCalories}>0 {"            = "}</Text>
+              <Text style={styles.totalDayCaloriesProgressSectionText}>
+                Exercise
+              </Text>
+            </View>
+            <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
+              <Text style={styles.totalDayCalories}>
+                {2700 -
+                  calculateTotalCalories([
+                    ...filteredBreakfastEntries,
+                    ...filteredLunchEntries,
+                    ...filteredDinnerEntries,
+                  ])}
+              </Text>
+              <Text style={styles.totalDayCaloriesProgressSectionText}>
+                Remaining
+              </Text>
+            </View>
+          </View>
+        </Card.Content>
+      </Card>
+      <ScrollView
+        contentContainerStyle={styles.scrollViewContainerContent}
+        style={styles.scrollViewContainer}
+      >
+        {/* Breakfast Section */}
+        <Card style={styles.section}>
+          <Card.Content>
+            <View style={styles.mealSectionHeaderContainer}>
+              <Text style={styles.sectionTitle}>Breakfast</Text>
+              <Text style={styles.totalMealSectionCalories}>
+                {calculateTotalCalories(filteredBreakfastEntries)}
+              </Text>
+            </View>
+            <FoodEntryList
+              foodEntryItems={breakfastEntries}
+              setFoodEntryItems={setBreakfastEntries}
+              mealType={"breakfast"}
+            />
+            <Button
+              style={styles.addButton}
+              mode="elevated"
+              onPress={() => handleAddEntry("breakfast")}
+            >
+              Add Food
+            </Button>
+          </Card.Content>
+        </Card>
 
         {/* Lunch Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderContainer}>
-            <Text style={styles.sectionTitle}>Lunch</Text>
-            <Text style={styles.totalCalories}>
-              Total Calories: {calculateTotalCalories(filteredLunchEntries)}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleAddEntry("lunch")}
-          >
-            <Text style={styles.addButtonLabel}>Add Food</Text>
-          </TouchableOpacity>
-          {filteredLunchEntries.map((entry, index) => (
-            <View key={index} style={styles.entry}>
-              <View style={styles.entryInfo}>
-                <Text style={styles.entryFoodNameText}>{entry.foodName}</Text>
-                <Text
-                  style={styles.entryCaloriesText}
-                >{`${entry.calories} cal`}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDeleteEntry("lunch", index)}
-              >
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
+        <Card style={styles.section}>
+          <Card.Content>
+            <View style={styles.mealSectionHeaderContainer}>
+              <Text style={styles.sectionTitle}>Lunch</Text>
+              <Text style={styles.totalMealSectionCalories}>
+                {calculateTotalCalories(filteredLunchEntries)}
+              </Text>
             </View>
-          ))}
-        </View>
+            <FoodEntryList
+              foodEntryItems={filteredLunchEntries}
+              setFoodEntryItems={setLunchEntries}
+              mealType={"lunch"}
+            />
+            <Button
+              style={styles.addButton}
+              mode="elevated"
+              onPress={() => handleAddEntry("lunch")}
+            >
+              Add Food
+            </Button>
+          </Card.Content>
+        </Card>
 
         {/* Dinner Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderContainer}>
-            <Text style={styles.sectionTitle}>Dinner</Text>
-            <Text style={styles.totalCalories}>
-              Total Calories: {calculateTotalCalories(filteredDinnerEntries)}
-            </Text>
-          </View>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handleAddEntry("dinner")}
-          >
-            <Text style={styles.addButtonLabel}>Add Food</Text>
-          </TouchableOpacity>
-          {filteredDinnerEntries.map((entry, index) => (
-            <View key={index} style={styles.entry}>
-              <View style={styles.entryInfo}>
-                <Text style={styles.entryFoodNameText}>{entry.foodName}</Text>
-                <Text
-                  style={styles.entryCaloriesText}
-                >{`${entry.calories} cal`}</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDeleteEntry("dinner", index)}
-              >
-                <Text style={styles.deleteButtonText}>Delete</Text>
-              </TouchableOpacity>
+        <Card style={styles.section}>
+          <Card.Content>
+            <View style={styles.mealSectionHeaderContainer}>
+              <Text style={styles.sectionTitle}>Dinner</Text>
+              <Text style={styles.totalMealSectionCalories}>
+                {calculateTotalCalories(filteredDinnerEntries)}
+              </Text>
             </View>
-          ))}
-        </View>
+            {filteredDinnerEntries.map((entry, index) => (
+              <View key={index} style={styles.entry}>
+                <View style={styles.entryInfo}>
+                  <Text style={styles.entryFoodNameText}>{entry.foodName}</Text>
+                  <Text
+                    style={styles.entryCaloriesText}
+                  >{`${entry.calories} cal`}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDeleteEntry("dinner", index)}
+                >
+                  <Text style={styles.deleteButtonText}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <Button
+              style={styles.addButton}
+              mode="elevated"
+              onPress={() => handleAddEntry("dinner")}
+            >
+              Add Food
+            </Button>
+          </Card.Content>
+        </Card>
       </ScrollView>
 
       {/* Calendar Modal */}
@@ -264,18 +366,90 @@ export default function FoodlogScreen() {
         transparent={true}
       >
         <View style={styles.calendarModal}>
-          {/* You can use react-native-calendars components here to show the calendar */}
-          {/* Pass handleDateChange as a callback to update selectedDate */}
-          <Calendar
-            current={selectedDate.toString()}
-            onDayPress={handleDateChange}
-            hideExtraDays
-            theme={{
-              selectedDayBackgroundColor: "#2c3b54",
-              selectedDayTextColor: "#ffffff",
-              todayTextColor: "#2c3b54",
-            }}
-          />
+          <View style={styles.calendarWrapper}>
+            <Calendar
+              style={{
+                height: "auto",
+                width: "100%",
+                backgroundColor: paperTheme.colors.surface,
+              }}
+              current={selectedDate.toString()}
+              onDayPress={handleDateChange}
+              hideExtraDays
+              theme={{
+                calendarBackground: paperTheme.colors.background, // Use theme background color
+                selectedDayBackgroundColor: paperTheme.colors.primary, // Use theme primary color
+                selectedDayTextColor: paperTheme.colors.text, // Use text color on primary
+                todayTextColor: paperTheme.colors.text, // Use text color on primary
+                "stylesheet.calendar.header": {
+                  monthText: {
+                    color: paperTheme.colors.text, // Use theme text color
+                    fontSize: 25,
+                  },
+                  dayHeader: {
+                    color: paperTheme.colors.text, // Use theme text color
+                    fontSize: 20,
+                    marginTop: 10,
+                    marginBottom: 10,
+                  },
+                },
+              }}
+              dayComponent={({ date, state }) => {
+                const isCurrentDate = date.dateString === selectedDate;
+                return (
+                  <TouchableOpacity
+                    onPress={() =>
+                      handleDateChange({ dateString: date.dateString })
+                    } // Forward the event
+                  >
+                    <View
+                      style={{
+                        height: 50,
+                        width: 50,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:
+                          state === "selected"
+                            ? paperTheme.colors.primary // Use theme primary color for selected
+                            : isCurrentDate
+                            ? "#1abc9c" // Highlight color for the current date
+                            : "transparent",
+                        borderRadius: 25,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: paperTheme.colors.text, // Use theme text color
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                justifyContent: "flex-end",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.cancelDateButton}
+                onPress={() => setIsCalendarModalVisible(false)}
+              >
+                <Text style={styles.cancelDateButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.cancelDateButton}
+                onPress={() => setIsCalendarModalVisible(false)}
+              >
+                <Text style={styles.cancelDateButtonText}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
 
@@ -290,136 +464,3 @@ export default function FoodlogScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeAreaView: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    padding: 1,
-    backgroundColor: "#0e1529",
-  },
-  containerContent: {
-    flexGrow: 1,
-  },
-  header: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-around",
-    marginBottom: 20,
-    paddingTop: 2,
-    paddingBottom: 2,
-    backgroundColor: "#0a0f1f",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: "#CCCCCC",
-    height: "20%",
-    maxHeight: "35%",
-  },
-  headerDateContainer: {
-    flex: 2,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi-transparent black background
-  },
-  date: {
-    paddingLeft: 10,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "white",
-  },
-  calendarModal: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-  },
-  calendarModalButton: {
-    flexDirection: "row",
-  },
-  totalDayCalories: {
-    flex: 1,
-    fontSize: 18,
-    paddingTop: 15,
-    color: "white",
-  },
-  section: {
-    marginBottom: 20,
-    padding: 15,
-    borderRadius: 8,
-    backgroundColor: "#0a0f1f",
-    borderColor: "rgba(255, 255, 255, 0.5)", // Semi-transparent white border color
-    borderWidth: 2,
-    shadowColor: "#FFFFFF", // White shadow
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-  },
-  sectionHeaderContainer: {
-    flexDirection: "row",
-    alignItems: "center", // Align items vertically
-    justifyContent: "space-between", // Space items evenly along the row
-    paddingBottom: 5,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-  },
-  addButton: {
-    marginTop: 8,
-    marginBottom: 8,
-    backgroundColor: "#2c3b54",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-  },
-  addButtonLabel: {
-    color: "white",
-  },
-  entry: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#F2F2F2",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
-  },
-  entryInfo: {
-    flex: 1,
-  },
-  entryFoodNameText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  entryCaloriesText: {
-    fontSize: 14,
-    color: "#666",
-  },
-  deleteButton: {
-    backgroundColor: "#E74C3C",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-  },
-  deleteButtonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
-  totalCalories: {
-    marginTop: 8,
-    fontWeight: "bold",
-    color: "white",
-  },
-});
