@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { Text, View, SafeAreaView, ScrollView } from "react-native";
-import { useTheme, Card, Button, FAB } from "react-native-paper"; // Import Paper components
-import { useAuth } from "../hooks/useAuth";
+import { useTheme, Card, Button } from "react-native-paper"; // Import Paper components
+import { useIsFocused } from "@react-navigation/native";
 import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
 import foodlogScreenStyles from "./styles/foodlogScreenStyles.js";
 import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 import DateSelector from "../features/foodlog/components/DateSelector.js";
+import FoodlogFabGroupMenu from "../features/foodlog/components/FabGroupMenu.js";
 
 export default function FoodlogScreen() {
   const styles = foodlogScreenStyles(); // Use the imported styles
-  const paperTheme = useTheme();
-  const { user } = useAuth();
 
   // State Management
   const [breakfastEntries, setBreakfastEntries] = useState([]);
@@ -21,6 +20,8 @@ export default function FoodlogScreen() {
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+
+  const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
 
   console.log("Breakfast Entries: ", breakfastEntries);
   console.log("Lunch Entries: ", lunchEntries);
@@ -214,6 +215,8 @@ export default function FoodlogScreen() {
           </Card.Content>
         </Card>
       </ScrollView>
+
+      <FoodlogFabGroupMenu isFocused={isFocused} />
 
       {/* Food Entry Modal opens when Add Food button is clicked */}
       <FoodEntryModal
