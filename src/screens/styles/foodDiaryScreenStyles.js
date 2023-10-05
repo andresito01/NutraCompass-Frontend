@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 
-const foodlogScreenStyles = () => {
+const foodDiaryScreenStyles = () => {
   const paperTheme = useTheme();
 
   return StyleSheet.create({
@@ -114,4 +114,4 @@ const foodlogScreenStyles = () => {
   });
 };
 
-export default foodlogScreenStyles;
+export default foodDiaryScreenStyles;

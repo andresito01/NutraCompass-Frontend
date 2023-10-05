@@ -1,30 +1,22 @@
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 
-const settingsScreenStyles = () => {
+const chatScreenStyles = () => {
   const paperTheme = useTheme();
 
   return StyleSheet.create({
     container: {
       flex: 1,
-      paddingTop: 0,
-      paddingBottom: 30,
       backgroundColor: paperTheme.colors.background,
-    },
-    row: {
-      backgroundColor: paperTheme.colors.background,
-      flexDirection: "row",
       alignItems: "center",
-      padding: 10,
-      marginTop: 0,
-      margin: 5,
+      justifyContent: "center",
     },
     text: {
       color: paperTheme.colors.text,
-      fontSize: 18,
-      marginLeft: 12,
+      fontSize: 24,
+      textAlign: "center",
     },
   });
 };
 
-export default settingsScreenStyles;
+export default chatScreenStyles;

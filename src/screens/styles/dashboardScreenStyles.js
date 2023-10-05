@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 
-const homeScreenStyles = () => {
+const dashboardScreenStyles = () => {
   const paperTheme = useTheme();
 
   return StyleSheet.create({
@@ -19,4 +19,4 @@ const homeScreenStyles = () => {
   });
 };
 
-export default homeScreenStyles;
+export default dashboardScreenStyles;

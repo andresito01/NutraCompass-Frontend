@@ -3,13 +3,13 @@ import { Text, View, SafeAreaView, ScrollView } from "react-native";
 import { useTheme, Card, Button } from "react-native-paper"; // Import Paper components
 import { useIsFocused } from "@react-navigation/native";
 import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
-import foodlogScreenStyles from "./styles/foodlogScreenStyles.js";
+import foodDiaryScreenStyles from "./styles/foodDiaryScreenStyles.js";
 import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 import DateSelector from "../features/foodlog/components/DateSelector.js";
 import FoodlogFabGroupMenu from "../features/foodlog/components/FabGroupMenu.js";
 
 export default function FoodlogScreen() {
-  const styles = foodlogScreenStyles(); // Use the imported styles
+  const styles = foodDiaryScreenStyles(); // Use the imported styles
 
   // State Management
   const [breakfastEntries, setBreakfastEntries] = useState([]);

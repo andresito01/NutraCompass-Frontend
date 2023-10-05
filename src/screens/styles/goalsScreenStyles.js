@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 
-const settingsScreenStyles = () => {
+const goalsScreenStyles = () => {
   const paperTheme = useTheme();
 
   return StyleSheet.create({
@@ -12,9 +12,11 @@ const settingsScreenStyles = () => {
       backgroundColor: paperTheme.colors.background,
     },
     row: {
+      ...paperTheme.shadows.small,
       backgroundColor: paperTheme.colors.background,
       flexDirection: "row",
       alignItems: "center",
+      justifyContent: "space-between",
       padding: 10,
       marginTop: 0,
       margin: 5,
@@ -27,4 +29,4 @@ const settingsScreenStyles = () => {
   });
 };
 
-export default settingsScreenStyles;
+export default goalsScreenStyles;

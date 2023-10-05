@@ -13,6 +13,7 @@ export const CustomDefaultTheme = {
     background: "#FFFFFF", // Light background color (white)
     border: "rgba(0, 0, 0, 0.1)", // Semi-transparent shadow border for light theme
     text: "#000000", // Set text color to black for light mode
+    bottomNavText: "#FFFFFF", // Set text color to white for light mode
     gradientStart: "rgba(0, 0, 0, 0)", // Use transparent color for gradient start
     gradientEnd: "#2ECC71",
   },
@@ -51,6 +52,7 @@ export const CustomDarkTheme = {
     background: "#121212", // Dark background color
     border: "rgba(255, 255, 255, 0.1)", // Semi-transparent shadow border for dark theme
     text: "#FFFFFF", // Set text color to white for dark mode
+    bottomNavText: "#000000", // Set text color to black for dark mode
     gradientStart: "rgba(0, 0, 0, 0)", // Use transparent color for gradient start
     gradientEnd: "#2ECC71",
   },

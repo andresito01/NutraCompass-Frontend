@@ -26,7 +26,7 @@ const FoodlogFabGroupMenu = ({ isFocused }) => {
           {
             icon: "pencil",
             color: paperTheme.colors.primary,
-            label: "Customize Meal Sections",
+            label: "Customize Meal Names",
             onPress: () => console.log("Pressed notifications"),
           },
         ]}
