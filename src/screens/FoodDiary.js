@@ -3,23 +3,29 @@ import { Text, View, SafeAreaView, ScrollView } from "react-native";
 import { useTheme, Card, Button } from "react-native-paper"; // Import Paper components
 import { useIsFocused } from "@react-navigation/native";
 import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
+import MealSectionCustomizationModal from "../features/foodlog/components/MealSectionCustomizationModal.js";
 import foodDiaryScreenStyles from "./styles/foodDiaryScreenStyles.js";
 import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 import DateSelector from "../features/foodlog/components/DateSelector.js";
 import FoodlogFabGroupMenu from "../features/foodlog/components/FabGroupMenu.js";
 
-export default function FoodlogScreen() {
+export default function FoodDiaryScreen() {
   const styles = foodDiaryScreenStyles(); // Use the imported styles
 
   // State Management
   const [breakfastEntries, setBreakfastEntries] = useState([]);
   const [lunchEntries, setLunchEntries] = useState([]);
   const [dinnerEntries, setDinnerEntries] = useState([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [activeMealSection, setActiveMealSection] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  // Modal State Management
+  const [isFoodEntryModalVisible, setIsFoodEntryModalVisible] = useState(false);
+  const [
+    isMealSectionCustomizationModalVisible,
+    setIsMealSectionCustomizationModalVisible,
+  ] = useState(false);
 
   const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
 
@@ -33,7 +39,7 @@ export default function FoodlogScreen() {
 
   const handleAddEntry = (mealType) => {
     setActiveMealSection(mealType); // Set the active meal section
-    setIsModalVisible(true); // Show modal
+    setIsFoodEntryModalVisible(true); // Show modal
   };
 
   const handleSaveEntry = (mealType, newFoodName, newFoodCalories) => {
@@ -58,12 +64,20 @@ export default function FoodlogScreen() {
       setDinnerEntries(updatedEntries);
     }
 
-    setIsModalVisible(false); // Hide modal
+    setIsFoodEntryModalVisible(false); // Hide modal
     setActiveMealSection(null); // Reset active meal section
   };
 
   const handleCancelEntry = () => {
-    setIsModalVisible(false); // Hide modal
+    setIsFoodEntryModalVisible(false); // Hide modal
+  };
+
+  const handleCloseMealSectionCustomizationModal = () => {
+    setIsMealSectionCustomizationModalVisible(false);
+  };
+
+  const handleOpenMealSectionCustomizationModal = () => {
+    setIsMealSectionCustomizationModalVisible(true);
   };
 
   const filteredBreakfastEntries = breakfastEntries.filter(
@@ -216,15 +230,26 @@ export default function FoodlogScreen() {
         </Card>
       </ScrollView>
 
-      <FoodlogFabGroupMenu isFocused={isFocused} />
+      <FoodlogFabGroupMenu
+        isFocused={isFocused}
+        openMealSectionCustomizationModal={
+          handleOpenMealSectionCustomizationModal
+        }
+      />
 
       {/* Food Entry Modal opens when Add Food button is clicked */}
       <FoodEntryModal
-        isVisible={isModalVisible}
+        isVisible={isFoodEntryModalVisible}
         onSave={(foodName, calories) =>
           handleSaveEntry(activeMealSection, foodName, calories)
         }
         onCancel={handleCancelEntry}
+      />
+
+      {/* Meal Section Customization Modal opens when the Fab Group action button called Customize Meal Names is clicked */}
+      <MealSectionCustomizationModal
+        isVisible={isMealSectionCustomizationModalVisible}
+        onCancel={handleCloseMealSectionCustomizationModal}
       />
     </SafeAreaView>
   );

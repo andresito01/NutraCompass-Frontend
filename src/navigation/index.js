@@ -13,7 +13,7 @@ export default function RootNavigation() {
     <PaperProvider theme={theme}>
       <SafeAreaView
         style={{
-          flex: "1",
+          flex: 1,
           backgroundColor: theme.colors.background, // Set the background color
         }}
       >

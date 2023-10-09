@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FAB, Portal, useTheme } from "react-native-paper";
 
-const FoodlogFabGroupMenu = ({ isFocused }) => {
+const FoodlogFabGroupMenu = ({
+  isFocused,
+  openMealSectionCustomizationModal,
+}) => {
   const paperTheme = useTheme();
   const [state, setState] = useState({ open: false }); // Set open to isFocused initially
 
@@ -27,7 +30,7 @@ const FoodlogFabGroupMenu = ({ isFocused }) => {
             icon: "pencil",
             color: paperTheme.colors.primary,
             label: "Customize Meal Names",
-            onPress: () => console.log("Pressed notifications"),
+            onPress: openMealSectionCustomizationModal,
           },
         ]}
         onStateChange={onStateChange}

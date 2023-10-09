@@ -12,6 +12,7 @@ import {
 } from "react-native";
 // Import for console log readability of fetched data objects
 import prettyFormat from "pretty-format";
+import Feather from "react-native-vector-icons/Feather";
 import { useTheme } from "react-native-paper"; // Import useTheme from react-native-paper
 import foodEntryModalStyles from "./styles/foodEntryModalStyles.js";
 // Edamam Food Database API Method Imports
@@ -142,9 +143,14 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
                     style={styles.selectButton}
                     onPress={() => handleSelectFood(item)}
                   >
-                    <Text style={{ color: paperTheme.colors.text }}>
+                    {/* <Text style={{ color: paperTheme.colors.text }}>
                       Select
-                    </Text>
+                    </Text> */}
+                    <Feather
+                      name="plus-circle"
+                      color={paperTheme.colors.text}
+                      size={24}
+                    />
                   </TouchableOpacity>
                 </View>
               )}
