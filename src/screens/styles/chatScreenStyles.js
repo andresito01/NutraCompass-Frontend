@@ -16,6 +16,11 @@ const chatScreenStyles = () => {
       fontSize: 24,
       textAlign: "center",
     },
+    navigateToGymButton: {
+      position: "absolute",
+      top: 20,
+      left: 20,
+    },
   });
 };
 

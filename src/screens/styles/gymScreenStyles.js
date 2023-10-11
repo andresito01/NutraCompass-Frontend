@@ -16,6 +16,11 @@ const gymScreenStyles = () => {
       fontSize: 24,
       textAlign: "center",
     },
+    navigateToChatButton: {
+      position: "absolute",
+      top: 20,
+      right: 20,
+    },
   });
 };
 

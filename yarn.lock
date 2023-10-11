@@ -3557,6 +3557,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/material-top-tabs@npm:^6.6.4":
+  version: 6.6.4
+  resolution: "@react-navigation/material-top-tabs@npm:6.6.4"
+  dependencies:
+    color: ^4.2.3
+    warn-once: ^0.1.0
+  peerDependencies:
+    "@react-navigation/native": ^6.0.0
+    react: "*"
+    react-native: "*"
+    react-native-pager-view: ">= 4.0.0"
+    react-native-tab-view: ">= 3.0.0"
+  checksum: 542bdba00c56a5c7f619c40235f1ca6c947ded6603949d5f07c18c073a876c166622a9a1d0683d904987e1a843925d85c987e3ff7d1952e68454b05d55bb0a8c
+  languageName: node
+  linkType: hard
+
 "@react-navigation/native@npm:^6.1.7":
   version: 6.1.7
   resolution: "@react-navigation/native@npm:6.1.7"
@@ -11439,6 +11455,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-pager-view@npm:6.2.0":
+  version: 6.2.0
+  resolution: "react-native-pager-view@npm:6.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 3006fe29f008d472ebfb654922302d138b08f56e7796627263424b5e91a3169dd9d0c450b5396efffd88d511197c5006180430a2b687d2d827926b324f8fb947
+  languageName: node
+  linkType: hard
+
 "react-native-paper@npm:^5.10.6":
   version: 5.10.6
   resolution: "react-native-paper@npm:5.10.6"
@@ -11503,6 +11529,19 @@ __metadata:
   version: 1.0.5
   resolution: "react-native-swipe-gestures@npm:1.0.5"
   checksum: d637bc40baa50fa0ce3b6cf2b494efeceaea03cc3875cb7cf7d76922914a21d5e6b098d4a084fb291ce61bfbb0a241c03cff24b15bebf0cfae1c146f4ad10d92
+  languageName: node
+  linkType: hard
+
+"react-native-tab-view@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "react-native-tab-view@npm:3.5.2"
+  dependencies:
+    use-latest-callback: ^0.1.5
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-pager-view: "*"
+  checksum: bd287e5543881aa662ee55418a3bd5dacb25033425a9fcb0fff21c3a3b96f956af1a77cd9bab4e7a8e94590080a5d8e3cb99cfa8613b19bf6da24bfc9b4942d4
   languageName: node
   linkType: hard
 
@@ -12025,6 +12064,7 @@ __metadata:
     "@react-native-async-storage/async-storage": 1.18.2
     "@react-native-community/datetimepicker": 7.2.0
     "@react-navigation/bottom-tabs": ^6.5.8
+    "@react-navigation/material-top-tabs": ^6.6.4
     "@react-navigation/native": ^6.1.7
     "@react-navigation/stack": ^6.3.17
     autoprefixer: ^10.4.15
@@ -12042,10 +12082,12 @@ __metadata:
     react-native-calendars: ^1.1300.0
     react-native-draggable-flatlist: ^4.0.1
     react-native-gesture-handler: ^2.12.1
+    react-native-pager-view: 6.2.0
     react-native-paper: ^5.10.6
     react-native-reanimated: 3.3.0
     react-native-safe-area-context: 4.6.3
     react-native-screens: ~3.22.0
+    react-native-tab-view: ^3.5.2
     react-native-vector-icons: ^10.0.0
     tailwindcss: 3.3.2
   languageName: unknown

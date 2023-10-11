@@ -1,5 +1,7 @@
 import React from "react";
+import { TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import Feather from "react-native-vector-icons/Feather";
@@ -13,6 +15,8 @@ import GoalsScreen from "../screens/Goals.js";
 
 const Tab = createBottomTabNavigator();
 const SettingsStack = createStackNavigator();
+//const GymStack = createStackNavigator();
+const GymTopTab = createMaterialTopTabNavigator();
 
 function UserStack() {
   const paperTheme = useTheme();
@@ -24,7 +28,7 @@ function UserStack() {
           tabBarIcon: ({ focused, size }) => {
             let iconName;
 
-            if (route.name === "Gym") {
+            if (route.name === "AppGym") {
               iconName = "home";
             } else if (route.name === "Dashboard") {
               iconName = "trello";
@@ -62,11 +66,76 @@ function UserStack() {
           headerShown: false,
         })}
       >
-        <Tab.Screen
-          name="Gym"
-          component={GymScreen}
-          options={{ tabBarLabel: "Gym" }}
-        />
+        <Tab.Screen name="AppGym" options={{ tabBarLabel: "Home" }}>
+          {() => (
+            <GymTopTab.Navigator
+              screenOptions={{
+                swipeEnabled: true,
+                tabBarShowIcon: false,
+                tabBarStyle: {
+                  display: "none",
+                },
+              }}
+            >
+              <GymTopTab.Screen
+                name="Gym"
+                component={GymScreen}
+                // options={({ navigation }) => ({
+                //   headerRight: () => (
+                //     <TouchableOpacity
+                //       onPress={() => navigation.navigate("Chat")}
+                //       style={{ marginRight: 20 }}
+                //     >
+                //       <Feather
+                //         name="message-circle"
+                //         size={25}
+                //         color={paperTheme.colors.text}
+                //       />
+                //     </TouchableOpacity>
+                //   ),
+                //   // gestureDirection: "horizontal-inverted", // Allow swipe to Chat from Gym
+                //   headerTitleStyle: {
+                //     color: paperTheme.colors.text,
+                //     fontSize: 20,
+                //   },
+                //   headerStyle: {
+                //     backgroundColor: paperTheme.colors.background,
+                //   },
+                //   headerTintColor: paperTheme.colors.text,
+                // })}
+              />
+              <GymTopTab.Screen
+                name="Chat"
+                component={ChatScreen}
+                // options={({ navigation }) => ({
+                //   headerLeft: () => (
+                //     <TouchableOpacity
+                //       onPress={() => navigation.navigate("Gym")}
+                //       style={{ marginLeft: 20 }}
+                //     >
+                //       <Feather
+                //         name="arrow-left"
+                //         size={25}
+                //         color={paperTheme.colors.text}
+                //       />
+                //     </TouchableOpacity>
+                //   ),
+                //   // gestureDirection: "horizontal", // Allow swipe back from Chat to Gym
+                //   headerTitleStyle: {
+                //     color: paperTheme.colors.text,
+                //     fontSize: 20,
+                //   },
+                //   headerStyle: {
+                //     backgroundColor: paperTheme.colors.background,
+                //   },
+                //   headerTintColor: paperTheme.colors.text,
+                //   headerBackTitleVisible: false,
+                // })}
+              />
+            </GymTopTab.Navigator>
+          )}
+        </Tab.Screen>
+
         <Tab.Screen
           name="Dashboard"
           component={DashboardScreen}
@@ -77,11 +146,7 @@ function UserStack() {
           component={FoodDiaryScreen}
           options={{ tabBarLabel: "Diary" }}
         />
-        <Tab.Screen
-          name="Chat"
-          component={ChatScreen}
-          options={{ tabBarLabel: "Chat" }}
-        />
+
         <Tab.Screen name="AppSettings" options={{ tabBarLabel: "More" }}>
           {() => (
             <SettingsStack.Navigator>
