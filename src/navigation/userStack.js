@@ -77,61 +77,8 @@ function UserStack() {
                 },
               }}
             >
-              <GymTopTab.Screen
-                name="Gym"
-                component={GymScreen}
-                // options={({ navigation }) => ({
-                //   headerRight: () => (
-                //     <TouchableOpacity
-                //       onPress={() => navigation.navigate("Chat")}
-                //       style={{ marginRight: 20 }}
-                //     >
-                //       <Feather
-                //         name="message-circle"
-                //         size={25}
-                //         color={paperTheme.colors.text}
-                //       />
-                //     </TouchableOpacity>
-                //   ),
-                //   // gestureDirection: "horizontal-inverted", // Allow swipe to Chat from Gym
-                //   headerTitleStyle: {
-                //     color: paperTheme.colors.text,
-                //     fontSize: 20,
-                //   },
-                //   headerStyle: {
-                //     backgroundColor: paperTheme.colors.background,
-                //   },
-                //   headerTintColor: paperTheme.colors.text,
-                // })}
-              />
-              <GymTopTab.Screen
-                name="Chat"
-                component={ChatScreen}
-                // options={({ navigation }) => ({
-                //   headerLeft: () => (
-                //     <TouchableOpacity
-                //       onPress={() => navigation.navigate("Gym")}
-                //       style={{ marginLeft: 20 }}
-                //     >
-                //       <Feather
-                //         name="arrow-left"
-                //         size={25}
-                //         color={paperTheme.colors.text}
-                //       />
-                //     </TouchableOpacity>
-                //   ),
-                //   // gestureDirection: "horizontal", // Allow swipe back from Chat to Gym
-                //   headerTitleStyle: {
-                //     color: paperTheme.colors.text,
-                //     fontSize: 20,
-                //   },
-                //   headerStyle: {
-                //     backgroundColor: paperTheme.colors.background,
-                //   },
-                //   headerTintColor: paperTheme.colors.text,
-                //   headerBackTitleVisible: false,
-                // })}
-              />
+              <GymTopTab.Screen name="Gym" component={GymScreen} />
+              <GymTopTab.Screen name="Chat" component={ChatScreen} />
             </GymTopTab.Navigator>
           )}
         </Tab.Screen>
@@ -154,31 +101,14 @@ function UserStack() {
                 name="More"
                 component={SettingsScreen}
                 options={{
-                  headerShown: true,
-                  headerTitleStyle: {
-                    color: paperTheme.colors.text,
-                    fontSize: 20,
-                  },
-                  headerStyle: {
-                    backgroundColor: paperTheme.colors.background,
-                  },
-                  headerTintColor: paperTheme.colors.text,
+                  headerShown: false,
                 }}
               />
               <SettingsStack.Screen
                 name="Goals"
                 component={GoalsScreen}
                 options={{
-                  headerShown: true,
-                  headerTitleStyle: {
-                    color: paperTheme.colors.text,
-                    fontSize: 20,
-                  },
-                  headerStyle: {
-                    backgroundColor: paperTheme.colors.background,
-                  },
-                  headerTintColor: paperTheme.colors.text,
-                  headerBackTitleVisible: false,
+                  headerShown: false,
                 }}
               />
             </SettingsStack.Navigator>

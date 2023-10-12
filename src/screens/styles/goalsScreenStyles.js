@@ -11,6 +11,15 @@ const goalsScreenStyles = () => {
       paddingBottom: 30,
       backgroundColor: paperTheme.colors.background,
     },
+    header: {
+      height: 45,
+      minWidth: "100%",
+      padding: 10,
+      justifyContent: "flex-end",
+    },
+    navigateToMoreButton: {
+      alignSelf: "flex-start",
+    },
     row: {
       ...paperTheme.shadows.small,
       backgroundColor: paperTheme.colors.background,

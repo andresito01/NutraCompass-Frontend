@@ -11,6 +11,12 @@ const settingsScreenStyles = () => {
       paddingBottom: 30,
       backgroundColor: paperTheme.colors.background,
     },
+    header: {
+      height: 45,
+      minWidth: "100%",
+      padding: 10,
+      justifyContent: "flex-end",
+    },
     row: {
       backgroundColor: paperTheme.colors.background,
       flexDirection: "row",

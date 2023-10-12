@@ -21,6 +21,11 @@ function SettingsScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={{ color: paperTheme.colors.text, alignSelf: "center" }}>
+          More
+        </Text>
+      </View>
       {/* Customize Goals  */}
       <Pressable
         onPress={() => navigation.navigate("Goals")}
