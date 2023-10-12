@@ -97,8 +97,8 @@ const foodDiaryScreenStyles = () => {
       color: paperTheme.colors.text,
     },
     addButton: {
+      alignSelf: "flex-start",
       marginTop: 20,
-      width: "31%",
     },
     totalMealSectionCalories: {
       marginTop: 4, // Reduce marginTop for total calories
