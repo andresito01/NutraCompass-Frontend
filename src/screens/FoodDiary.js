@@ -13,9 +13,23 @@ export default function FoodDiaryScreen() {
   const styles = foodDiaryScreenStyles(); // Use the imported styles
 
   // State Management
-  const [breakfastEntries, setBreakfastEntries] = useState([]);
-  const [lunchEntries, setLunchEntries] = useState([]);
-  const [dinnerEntries, setDinnerEntries] = useState([]);
+  const [mealSections, setMealSections] = useState([
+    { id: "breakfast", name: "Breakfast", order: 1 },
+    { id: "lunch", name: "Lunch", order: 2 },
+    { id: "dinner", name: "Dinner", order: 3 },
+  ]);
+
+  const initialFoodEntries = {
+    breakfast: [],
+    lunch: [],
+    dinner: [],
+  };
+
+  const [foodEntries, setFoodEntries] = useState(initialFoodEntries);
+
+  // const [breakfastEntries, setBreakfastEntries] = useState([]);
+  // const [lunchEntries, setLunchEntries] = useState([]);
+  // const [dinnerEntries, setDinnerEntries] = useState([]);
   const [activeMealSection, setActiveMealSection] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -28,10 +42,6 @@ export default function FoodDiaryScreen() {
   ] = useState(false);
 
   const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
-
-  console.log("Breakfast Entries: ", breakfastEntries);
-  console.log("Lunch Entries: ", lunchEntries);
-  console.log("Dinner Entries: ", dinnerEntries);
 
   const calculateTotalCalories = (entries) => {
     return entries.reduce((total, entry) => total + entry.calories, 0);
@@ -50,22 +60,18 @@ export default function FoodDiaryScreen() {
       calories: newFoodCalories,
     };
 
-    if (mealType === "breakfast") {
-      const updatedEntries = [...breakfastEntries, newEntry];
-
-      setBreakfastEntries(updatedEntries);
-    } else if (mealType === "lunch") {
-      const updatedEntries = [...lunchEntries, newEntry];
-
-      setLunchEntries(updatedEntries);
-    } else if (mealType === "dinner") {
-      const updatedEntries = [...dinnerEntries, newEntry];
-
-      setDinnerEntries(updatedEntries);
-    }
+    const updatedEntries = {
+      ...foodEntries,
+      [mealType]: [...foodEntries[mealType], newEntry],
+    };
+    setFoodEntries(updatedEntries);
 
     setIsFoodEntryModalVisible(false); // Hide modal
     setActiveMealSection(null); // Reset active meal section
+  };
+
+  const handleSaveCustomizations = (updatedSections) => {
+    setMealSections(updatedSections);
   };
 
   const handleCancelEntry = () => {
@@ -80,17 +86,16 @@ export default function FoodDiaryScreen() {
     setIsMealSectionCustomizationModalVisible(true);
   };
 
-  const filteredBreakfastEntries = breakfastEntries.filter(
-    (entry) => entry.date === selectedDate
-  );
-
-  const filteredLunchEntries = lunchEntries.filter(
-    (entry) => entry.date === selectedDate
-  );
-
-  const filteredDinnerEntries = dinnerEntries.filter(
-    (entry) => entry.date === selectedDate
-  );
+  const filteredEntriesByMeal = {};
+  mealSections.forEach((section) => {
+    if (foodEntries[section.id]) {
+      filteredEntriesByMeal[section.id] = foodEntries[section.id].filter(
+        (entry) => entry.date === selectedDate
+      );
+    } else {
+      console.log(`No entries found for meal section: ${section.id}`);
+    }
+  });
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -120,11 +125,11 @@ export default function FoodDiaryScreen() {
             </View>
             <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
               <Text style={styles.totalDayCalories}>
-                {calculateTotalCalories([
-                  ...filteredBreakfastEntries,
-                  ...filteredLunchEntries,
-                  ...filteredDinnerEntries,
-                ])}
+                {calculateTotalCalories(
+                  mealSections.flatMap(
+                    (section) => filteredEntriesByMeal[section.id]
+                  )
+                )}
                 {"      + "}
               </Text>
               <Text style={styles.totalDayCaloriesProgressSectionText}>
@@ -140,11 +145,11 @@ export default function FoodDiaryScreen() {
             <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
               <Text style={styles.totalDayCalories}>
                 {2700 -
-                  calculateTotalCalories([
-                    ...filteredBreakfastEntries,
-                    ...filteredLunchEntries,
-                    ...filteredDinnerEntries,
-                  ])}
+                  calculateTotalCalories(
+                    mealSections.flatMap(
+                      (section) => filteredEntriesByMeal[section.id]
+                    )
+                  )}
               </Text>
               <Text style={styles.totalDayCaloriesProgressSectionText}>
                 Remaining
@@ -157,77 +162,36 @@ export default function FoodDiaryScreen() {
         contentContainerStyle={styles.scrollViewContainerContent}
         style={styles.scrollViewContainer}
       >
-        {/* Breakfast Section */}
-        <Card style={styles.section}>
-          <Card.Content>
-            <View style={styles.mealSectionHeaderContainer}>
-              <Text style={styles.sectionTitle}>Breakfast</Text>
-              <Text style={styles.totalMealSectionCalories}>
-                {calculateTotalCalories(filteredBreakfastEntries)}
-              </Text>
-            </View>
-            <FoodEntryList
-              foodEntryItems={filteredBreakfastEntries}
-              setFoodEntryItems={setBreakfastEntries}
-              mealType={"breakfast"}
-            />
-            <Button
-              style={styles.addButton}
-              mode="elevated"
-              onPress={() => handleAddEntry("breakfast")}
-            >
-              Add Food
-            </Button>
-          </Card.Content>
-        </Card>
-
-        {/* Lunch Section */}
-        <Card style={styles.section}>
-          <Card.Content>
-            <View style={styles.mealSectionHeaderContainer}>
-              <Text style={styles.sectionTitle}>Lunch</Text>
-              <Text style={styles.totalMealSectionCalories}>
-                {calculateTotalCalories(filteredLunchEntries)}
-              </Text>
-            </View>
-            <FoodEntryList
-              foodEntryItems={filteredLunchEntries}
-              setFoodEntryItems={setLunchEntries}
-              mealType={"lunch"}
-            />
-            <Button
-              style={styles.addButton}
-              mode="elevated"
-              onPress={() => handleAddEntry("lunch")}
-            >
-              Add Food
-            </Button>
-          </Card.Content>
-        </Card>
-
-        {/* Dinner Section */}
-        <Card style={styles.section}>
-          <Card.Content>
-            <View style={styles.mealSectionHeaderContainer}>
-              <Text style={styles.sectionTitle}>Dinner</Text>
-              <Text style={styles.totalMealSectionCalories}>
-                {calculateTotalCalories(filteredDinnerEntries)}
-              </Text>
-            </View>
-            <FoodEntryList
-              foodEntryItems={filteredDinnerEntries}
-              setFoodEntryItems={setDinnerEntries}
-              mealType={"dinner"}
-            />
-            <Button
-              style={styles.addButton}
-              mode="elevated"
-              onPress={() => handleAddEntry("dinner")}
-            >
-              Add Food
-            </Button>
-          </Card.Content>
-        </Card>
+        {mealSections.map((section) => (
+          <Card key={section.id} style={styles.section}>
+            <Card.Content>
+              <View style={styles.mealSectionHeaderContainer}>
+                <Text style={styles.sectionTitle}>{section.name}</Text>
+                <Text style={styles.totalMealSectionCalories}>
+                  {calculateTotalCalories(filteredEntriesByMeal[section.id])}
+                </Text>
+              </View>
+              <FoodEntryList
+                foodEntryItems={filteredEntriesByMeal[section.id]}
+                setFoodEntryItems={(newEntries) => {
+                  const updatedEntries = {
+                    ...foodEntries,
+                    [section.id]: newEntries,
+                  };
+                  setFoodEntries(updatedEntries);
+                }}
+                mealType={section.id}
+              />
+              <Button
+                style={styles.addButton}
+                mode="elevated"
+                onPress={() => handleAddEntry(section.id)}
+              >
+                Add Food
+              </Button>
+            </Card.Content>
+          </Card>
+        ))}
       </ScrollView>
 
       <FoodlogFabGroupMenu
@@ -250,6 +214,11 @@ export default function FoodDiaryScreen() {
       <MealSectionCustomizationModal
         isVisible={isMealSectionCustomizationModalVisible}
         onCancel={handleCloseMealSectionCustomizationModal}
+        onSaveCustomizations={handleSaveCustomizations}
+        mealSections={mealSections}
+        setMealSections={setMealSections}
+        foodEntries={foodEntries}
+        setFoodEntries={setFoodEntries}
       />
     </SafeAreaView>
   );

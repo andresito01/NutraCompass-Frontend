@@ -10,16 +10,12 @@ export function useThemeContext() {
 }
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(CustomDefaultTheme); // State for theme
+  const [theme, setTheme] = useState(CustomDarkTheme); // Use dark theme as the default
 
   // Function to toggle theme
   const toggleTheme = () => {
     const newTheme =
       theme === CustomDefaultTheme ? CustomDarkTheme : CustomDefaultTheme;
-    console.log(newTheme === CustomDarkTheme);
-    console.log(
-      `Switching to ${newTheme === CustomDarkTheme ? "Dark" : "Light"} Theme`
-    );
     setTheme(newTheme);
   };
 
