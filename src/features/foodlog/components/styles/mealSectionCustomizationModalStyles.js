@@ -17,15 +17,6 @@ const mealSectionCustomizationModalStyles = () => {
       minHeight: "97%", // Adjust the height
       backgroundColor: paperTheme.colors.background, // Use theme background color
       padding: 20,
-      // borderColor: paperTheme.colors.primary, // Use theme primary color for border
-      // borderWidth: 2,
-      shadowColor: paperTheme.colors.text, // Use theme text color for shadow
-      shadowOpacity: 0.5,
-      shadowRadius: 5,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
     },
     modalButtonHeader: {
       width: "100%",

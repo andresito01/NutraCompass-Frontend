@@ -4,6 +4,7 @@ import { useTheme, Card, Button } from "react-native-paper"; // Import Paper com
 import { useIsFocused } from "@react-navigation/native";
 import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
 import MealSectionCustomizationModal from "../features/foodlog/components/MealSectionCustomizationModal.js";
+import DailyNutritionGoalsCustomizationModal from "../features/foodlog/components/DailyNutritionGoalsCustomizationModal.js";
 import foodDiaryScreenStyles from "./styles/foodDiaryScreenStyles.js";
 import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 import DateSelector from "../features/foodlog/components/DateSelector.js";
@@ -39,6 +40,10 @@ export default function FoodDiaryScreen() {
   const [
     isMealSectionCustomizationModalVisible,
     setIsMealSectionCustomizationModalVisible,
+  ] = useState(false);
+  const [
+    isDailyNutritionGoalsCustomizationModalVisible,
+    setIsDailyNutritionGoalsCustomizationModalVisible,
   ] = useState(false);
 
   const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
@@ -84,6 +89,14 @@ export default function FoodDiaryScreen() {
 
   const handleOpenMealSectionCustomizationModal = () => {
     setIsMealSectionCustomizationModalVisible(true);
+  };
+
+  const handleCloseDailyNutritionGoalsCustomizationModal = () => {
+    setIsDailyNutritionGoalsCustomizationModalVisible(false);
+  };
+
+  const handleOpenDailyNutritionGoalsCustomizationModal = () => {
+    setIsDailyNutritionGoalsCustomizationModalVisible(true);
   };
 
   const filteredEntriesByMeal = {};
@@ -199,6 +212,9 @@ export default function FoodDiaryScreen() {
         openMealSectionCustomizationModal={
           handleOpenMealSectionCustomizationModal
         }
+        openDailyNutritionGoalsCustomizationModal={
+          handleOpenDailyNutritionGoalsCustomizationModal
+        }
       />
 
       {/* Food Entry Modal opens when Add Food button is clicked */}
@@ -219,6 +235,11 @@ export default function FoodDiaryScreen() {
         setMealSections={setMealSections}
         foodEntries={foodEntries}
         setFoodEntries={setFoodEntries}
+      />
+      {/* Daily Nutrition Goals Customization opens when the Fab Group action button called Customize Daily Nutrition Goals is clicked */}
+      <DailyNutritionGoalsCustomizationModal
+        isVisible={isDailyNutritionGoalsCustomizationModalVisible}
+        closeModal={handleCloseDailyNutritionGoalsCustomizationModal}
       />
     </SafeAreaView>
   );

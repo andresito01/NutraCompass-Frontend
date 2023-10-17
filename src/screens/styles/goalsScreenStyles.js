@@ -22,7 +22,7 @@ const goalsScreenStyles = () => {
     },
     row: {
       ...paperTheme.shadows.small,
-      backgroundColor: paperTheme.colors.background,
+      backgroundColor: paperTheme.colors.surface,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -34,6 +34,14 @@ const goalsScreenStyles = () => {
       color: paperTheme.colors.text,
       fontSize: 18,
       marginLeft: 12,
+    },
+    input: {
+      flex: 1,
+
+      textAlign: "right",
+      paddingHorizontal: 10,
+      fontSize: 16,
+      color: paperTheme.colors.text,
     },
   });
 };

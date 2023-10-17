@@ -3,17 +3,16 @@ import {
   Modal,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import { useTheme, Appbar, Searchbar, Card, Button } from "react-native-paper";
 // Import for console log readability of fetched data objects
 import prettyFormat from "pretty-format";
 import Feather from "react-native-vector-icons/Feather";
-import { useTheme } from "react-native-paper"; // Import useTheme from react-native-paper
 import foodEntryModalStyles from "./styles/foodEntryModalStyles.js";
 // Edamam Food Database API Method Imports
 import { searchFood } from "../api/EdamamFoodDatabaseAPI/edamamMethods.js";
@@ -100,28 +99,58 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
     <Modal visible={isVisible} animationType="slide" transparent={true}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Appbar.Header
+              mode="center-aligned"
+              style={{
+                height: 45,
+                backgroundColor: paperTheme.colors.background,
+              }}
+            >
+              <Appbar.BackAction onPress={handleCloseModal} />
+              <Appbar.Content title="Add Food" />
+            </Appbar.Header>
+          </View>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add Food Entry</Text>
-            <TextInput
+            <Searchbar
               ref={foodNameInputRef}
-              placeholder="Food Name"
+              placeholder="Search for a food"
               placeholderTextColor={paperTheme.colors.text}
-              style={styles.input}
+              //style={styles.input}
               value={foodName}
               onChangeText={setFoodName}
+              onIconPress={handleFoodSearch} // Trigger search on icon press
+              onSubmitEditing={handleFoodSearch}
+              mode="bar"
             />
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleFoodSearch}
+            <Card
+              style={{
+                backgroundColor: "transparent",
+                alignItems: "flex-start",
+              }}
             >
-              <Text style={styles.modalButtonText}>Search Food</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+              <Card.Actions>
+                <Button>All</Button>
+                <Button>My Meals</Button>
+              </Card.Actions>
+            </Card>
+            <Card
+              style={{
+                backgroundColor: paperTheme.colors.surface,
+                alignItems: "flex-start",
+                marginBottom: 10,
+              }}
+            >
+              <Card.Actions>
+                <Button onPress={openBarcodeScanner}>Scan a Barcode</Button>
+              </Card.Actions>
+            </Card>
+            {/* <TouchableOpacity
               style={styles.modalButton}
               onPress={openBarcodeScanner}
             >
               <Text style={styles.modalButtonText}>Open Barcode Scanner</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             {/* Display Food Search Results */}
             {/* {console.log("FlatList Data:", prettyFormat(searchResults))} */}
             <FlatList
@@ -155,12 +184,6 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
                 </View>
               )}
             />
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={handleCloseModal}
-            >
-              <Text style={styles.modalButtonText}>Cancel</Text>
-            </TouchableOpacity>
           </View>
 
           {/* Barcode Scanner Modal */}

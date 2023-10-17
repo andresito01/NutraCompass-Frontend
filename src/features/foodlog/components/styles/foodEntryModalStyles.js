@@ -11,6 +11,11 @@ const foodEntryModalStyles = () => {
       alignItems: "center",
       backgroundColor: "transparent", // transparent background
     },
+    modalHeader: {
+      padding: 0,
+      backgroundColor: paperTheme.colors.background,
+      width: "100%",
+    },
     modalContent: {
       flex: 1,
       width: "100%", // Adjust the width
@@ -20,13 +25,13 @@ const foodEntryModalStyles = () => {
       padding: 20,
       // borderColor: paperTheme.colors.primary, // Use theme primary color for border
       // borderWidth: 2,
-      shadowColor: paperTheme.colors.text, // Use theme text color for shadow
-      shadowOpacity: 0.5,
-      shadowRadius: 5,
-      shadowOffset: {
-        width: 0,
-        height: 0,
-      },
+      //shadowColor: paperTheme.colors.text, // Use theme text color for shadow
+      // shadowOpacity: 0.5,
+      // shadowRadius: 5,
+      // shadowOffset: {
+      //   width: 0,
+      //   height: 0,
+      // },
     },
     flatlist: {
       flex: 1,
@@ -63,6 +68,7 @@ const foodEntryModalStyles = () => {
       justifyContent: "space-between",
       alignItems: "center",
       backgroundColor: paperTheme.colors.surface, // Use theme surface color
+      elevation: 4,
       paddingHorizontal: 16,
       paddingVertical: 12,
       marginBottom: 6,
