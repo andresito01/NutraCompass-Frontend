@@ -20,6 +20,7 @@ const dailyNutritionGoalsCustomizationModalStyles = () => {
       width: "80%",
       backgroundColor: paperTheme.colors.surface,
       padding: 20,
+      paddingTop: 0,
       borderRadius: 8,
       justifyContent: "center",
     },

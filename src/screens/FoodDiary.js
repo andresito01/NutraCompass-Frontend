@@ -9,28 +9,14 @@ import foodDiaryScreenStyles from "./styles/foodDiaryScreenStyles.js";
 import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
 import DateSelector from "../features/foodlog/components/DateSelector.js";
 import FoodlogFabGroupMenu from "../features/foodlog/components/FabGroupMenu.js";
+import { useFoodLog } from "../features/foodlog/context/FoodLogContext.js";
 
 export default function FoodDiaryScreen() {
   const styles = foodDiaryScreenStyles(); // Use the imported styles
 
-  // State Management
-  const [mealSections, setMealSections] = useState([
-    { id: "breakfast", name: "Breakfast", order: 1 },
-    { id: "lunch", name: "Lunch", order: 2 },
-    { id: "dinner", name: "Dinner", order: 3 },
-  ]);
+  const { mealSections, setMealSections, foodEntries, saveFoodLogEntry } =
+    useFoodLog();
 
-  const initialFoodEntries = {
-    breakfast: [],
-    lunch: [],
-    dinner: [],
-  };
-
-  const [foodEntries, setFoodEntries] = useState(initialFoodEntries);
-
-  // const [breakfastEntries, setBreakfastEntries] = useState([]);
-  // const [lunchEntries, setLunchEntries] = useState([]);
-  // const [dinnerEntries, setDinnerEntries] = useState([]);
   const [activeMealSection, setActiveMealSection] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
@@ -49,7 +35,7 @@ export default function FoodDiaryScreen() {
   const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
 
   const calculateTotalCalories = (entries) => {
-    return entries.reduce((total, entry) => total + entry.calories, 0);
+    return entries.reduce((total, entry) => total + entry.foodCalories, 0);
   };
 
   const handleAddEntry = (mealType) => {
@@ -58,25 +44,11 @@ export default function FoodDiaryScreen() {
   };
 
   const handleSaveEntry = (mealType, newFoodName, newFoodCalories) => {
-    console.log("Date Entry Saved To: ", selectedDate);
-    const newEntry = {
-      date: selectedDate,
-      foodName: newFoodName,
-      calories: newFoodCalories,
-    };
-
-    const updatedEntries = {
-      ...foodEntries,
-      [mealType]: [...foodEntries[mealType], newEntry],
-    };
-    setFoodEntries(updatedEntries);
+    // Call the context method to save the food entry
+    saveFoodLogEntry(mealType, newFoodName, newFoodCalories, selectedDate);
 
     setIsFoodEntryModalVisible(false); // Hide modal
     setActiveMealSection(null); // Reset active meal section
-  };
-
-  const handleSaveCustomizations = (updatedSections) => {
-    setMealSections(updatedSections);
   };
 
   const handleCancelEntry = () => {
@@ -105,8 +77,10 @@ export default function FoodDiaryScreen() {
       filteredEntriesByMeal[section.id] = foodEntries[section.id].filter(
         (entry) => entry.date === selectedDate
       );
-    } else {
-      console.log(`No entries found for meal section: ${section.id}`);
+      console.log(
+        `Entries for ${section.name}:`,
+        filteredEntriesByMeal[section.id]
+      );
     }
   });
 
@@ -175,36 +149,32 @@ export default function FoodDiaryScreen() {
         contentContainerStyle={styles.scrollViewContainerContent}
         style={styles.scrollViewContainer}
       >
-        {mealSections.map((section) => (
-          <Card key={section.id} style={styles.section}>
-            <Card.Content>
-              <View style={styles.mealSectionHeaderContainer}>
-                <Text style={styles.sectionTitle}>{section.name}</Text>
-                <Text style={styles.totalMealSectionCalories}>
-                  {calculateTotalCalories(filteredEntriesByMeal[section.id])}
-                </Text>
-              </View>
-              <FoodEntryList
-                foodEntryItems={filteredEntriesByMeal[section.id]}
-                setFoodEntryItems={(newEntries) => {
-                  const updatedEntries = {
-                    ...foodEntries,
-                    [section.id]: newEntries,
-                  };
-                  setFoodEntries(updatedEntries);
-                }}
-                mealType={section.id}
-              />
-              <Button
-                style={styles.addButton}
-                mode="elevated"
-                onPress={() => handleAddEntry(section.id)}
-              >
-                Add Food
-              </Button>
-            </Card.Content>
-          </Card>
-        ))}
+        {mealSections
+          .filter((section) => section.name) // Filter out sections with empty names
+          .map((section) => (
+            <Card key={section.id} style={styles.section}>
+              <Card.Content>
+                <View style={styles.mealSectionHeaderContainer}>
+                  <Text style={styles.sectionTitle}>{section.name}</Text>
+                  <Text style={styles.totalMealSectionCalories}>
+                    {calculateTotalCalories(filteredEntriesByMeal[section.id])}
+                  </Text>
+                </View>
+                <FoodEntryList
+                  foodEntryItems={filteredEntriesByMeal[section.id]}
+                  mealType={section.id}
+                  selectedDate={selectedDate}
+                />
+                <Button
+                  style={styles.addButton}
+                  mode="elevated"
+                  onPress={() => handleAddEntry(section.id)}
+                >
+                  Add Food
+                </Button>
+              </Card.Content>
+            </Card>
+          ))}
       </ScrollView>
 
       <FoodlogFabGroupMenu
@@ -229,12 +199,7 @@ export default function FoodDiaryScreen() {
       {/* Meal Section Customization Modal opens when the Fab Group action button called Customize Meal Names is clicked */}
       <MealSectionCustomizationModal
         isVisible={isMealSectionCustomizationModalVisible}
-        onCancel={handleCloseMealSectionCustomizationModal}
-        onSaveCustomizations={handleSaveCustomizations}
-        mealSections={mealSections}
-        setMealSections={setMealSections}
-        foodEntries={foodEntries}
-        setFoodEntries={setFoodEntries}
+        closeModal={handleCloseMealSectionCustomizationModal}
       />
       {/* Daily Nutrition Goals Customization opens when the Fab Group action button called Customize Daily Nutrition Goals is clicked */}
       <DailyNutritionGoalsCustomizationModal

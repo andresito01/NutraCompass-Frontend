@@ -24,58 +24,6 @@ const mealSectionCustomizationModalStyles = () => {
       justifyContent: "space-between",
       alignItems: "center",
     },
-    formContainer: {
-      backgroundColor: paperTheme.colors.background,
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 10,
-      marginTop: 20,
-      marginBottom: 20,
-      elevation: 4,
-    },
-    formFieldContainer: {
-      ...paperTheme.shadows.small,
-      backgroundColor: paperTheme.colors.background,
-      width: "100%",
-      flexDirection: "row",
-      alignItems: "center",
-      padding: 5,
-      elevation: 2,
-    },
-    formMealInput: {
-      color: paperTheme.colors.text,
-      alignSelf: "flex-start",
-      textAlign: "center",
-      fontSize: 14,
-      height: "100%",
-      width: "80%",
-      marginLeft: 5,
-      marginRight: 5,
-      borderWidth: 1,
-      borderRadius: 20,
-      borderColor: "gray",
-      backgroundColor: paperTheme.colors.surface,
-    },
-    addMealSectionButton: {
-      alignSelf: "flex-end",
-      padding: 10,
-      height: "100%",
-      width: "15%",
-      alignItem: "center",
-    },
-    mealSectionContainer: {
-      ...paperTheme.shadows.large,
-      backgroundColor: "transparent",
-      flex: 1,
-      marginBottom: 10,
-      elevation: 2,
-    },
-    formTitle: {
-      fontSize: 18,
-      color: paperTheme.colors.text, // Use theme text color
-      fontWeight: "bold",
-      marginBottom: 10,
-    },
     modalTitle: {
       marginTop: 20,
       marginBottom: 5,
@@ -86,33 +34,32 @@ const mealSectionCustomizationModalStyles = () => {
     },
     sectionRow: {
       ...paperTheme.shadows.small,
+      backgroundColor: "transparent",
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
       padding: 10,
-      marginTop: 10,
-      marginBottom: 10,
+      marginTop: 2,
+      marginBottom: 2,
       marginRight: 10,
       elevation: 6,
     },
-    deleteSectionButton: {
-      marginLeft: 0,
-      paddingTop: 5,
-      paddingRight: 10,
-      paddingBottom: 10,
-    },
-    sectionOrder: {
+    sectionIdText: {
       color: paperTheme.colors.text,
       fontSize: 18,
     },
-    sectionInput: {
-      color: paperTheme.colors.text,
+    sectionIdTextNoValue: {
+      color: "rgba(0, 0, 0, 0.7)", // Light gray color for
       fontSize: 18,
     },
-    sectionMoveToggle: {
-      alignItems: "center",
-      justifyContent: "center",
+    sectionInputText: {
+      color: paperTheme.colors.primary,
+      fontSize: 18,
+    },
+    sectionInputTextNoValue: {
+      color: "rgba(0, 0, 0, 0.7)", // Light gray color for
+      fontSize: 18,
     },
   });
 };

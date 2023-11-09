@@ -59,7 +59,7 @@ const SwipeableFoodEntryItem = ({
       useNativeDriver: false, // Set this to true if the animation supports it
     }).start(() => {
       handleDeleteEntry(id);
-      deleteButtonPressed();
+      deleteButtonPressed(id);
       resetPositionAfterEntryDelete();
     });
   };
@@ -86,7 +86,6 @@ const SwipeableFoodEntryItem = ({
     }).start(() => enableScrollView(false));
   };
 
-  console.log();
   return (
     <View style={styles.containerStyle}>
       <Animated.View
@@ -124,7 +123,7 @@ const SwipeableFoodEntryItem = ({
       >
         <View style={styles.entryInfo}>
           <Text style={styles.entryFoodNameText}>{itemData.foodName}</Text>
-          <Text style={styles.entryCaloriesText}>{itemData.calories}</Text>
+          <Text style={styles.entryCaloriesText}>{itemData.foodCalories}</Text>
         </View>
       </Animated.View>
 

@@ -9,176 +9,131 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import DraggableFlatList from "react-native-draggable-flatlist";
+import { useFoodLog } from "../context/FoodLogContext.js";
 import { useTheme } from "react-native-paper";
 import mealSectionCustomizationModalStyles from "./styles/mealSectionCustomizationModalStyles.js";
 import Feather from "react-native-vector-icons/Feather";
 
-const MealSectionCustomizationModal = ({
-  isVisible,
-  onCancel,
-  onSaveCustomizations,
-  mealSections,
-  setMealSections,
-  foodEntries,
-  setFoodEntries,
-}) => {
+const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
   const styles = mealSectionCustomizationModalStyles();
   const paperTheme = useTheme();
+  const { mealSections, setMealSections } = useFoodLog();
 
-  const [newMealSection, setNewMealSection] = useState({ name: "", order: "" });
+  const [localMealSections, setLocalMealSections] = useState([...mealSections]);
+  const [editingStates, setEditingStates] = useState(
+    localMealSections.map(() => false)
+  );
+
+  useEffect(() => {
+    // Reset localMealSections and editingStates when modal opens or closes
+    if (isVisible) {
+      setLocalMealSections([...mealSections]);
+      setEditingStates(localMealSections.map(() => false));
+    }
+  }, [isVisible, mealSections]);
 
   const handleCloseModal = () => {
-    onCancel();
+    closeModal();
   };
 
-  const handleSaveCustomizations = () => {
-    onSaveCustomizations(mealSections);
-    handleCloseModal();
-  };
-
-  const updateMealSectionName = (sectionId, newName) => {
-    const updatedSections = mealSections.map((section) => {
-      if (section.id === sectionId) {
+  const updateMealName = (mealId, newName) => {
+    const updatedSections = localMealSections.map((section) => {
+      if (section.id === mealId) {
         return { ...section, name: newName };
       }
       return section;
     });
-    setMealSections(updatedSections);
+    setLocalMealSections(updatedSections);
   };
 
-  const handleDeleteMealSection = (sectionId) => {
-    const updatedSections = mealSections
-      .filter((section) => section.id !== sectionId)
-      .map((section, index) => ({
-        ...section,
-        order: index + 1,
-      }));
-    setMealSections(updatedSections);
-
-    // Delete the entries for the removed section
-    const updatedEntries = { ...foodEntries };
-    delete updatedEntries[sectionId];
-    setFoodEntries(updatedEntries);
+  const handleSaveCustomizations = () => {
+    // Update the global mealSections state in FoodLogContext
+    setMealSections(localMealSections);
+    handleCloseModal();
   };
 
-  const handleAddNewMealSection = () => {
-    if (newMealSection.name) {
-      if (mealSections.length === 0) {
-        // If there are no existing sections, set the order to 1
-        newMealSection.order = 1;
-      } else {
-        // Find the highest order number in existing sections
-        const maxOrder = Math.max(
-          ...mealSections.map((section) => section.order)
-        );
-        // Set the new section's order to one greater than the max
-        newMealSection.order = maxOrder + 1;
-      }
+  const renderMealSectionItems = () => {
+    return localMealSections.map((item, index) => {
+      const isEditing = editingStates[index];
+      const editedName = item.name;
 
-      const newSection = {
-        id: `custom_${Date.now()}`,
-        name: newMealSection.name,
-        order: newMealSection.order,
+      const handleNameClick = () => {
+        const newEditingStates = [...editingStates];
+        newEditingStates[index] = true;
+        setEditingStates(newEditingStates);
       };
 
-      const updatedSections = [...mealSections, newSection];
-      setMealSections(updatedSections);
+      const handleNameChange = (newName) => {
+        // Update the name locally
+        const updatedSections = [...localMealSections];
+        updatedSections[index] = { ...item, name: newName };
+        setLocalMealSections(updatedSections);
+      };
 
-      // Initialize the entries for the new section as an empty array
-      setFoodEntries({
-        ...foodEntries,
-        [newSection.id]: [],
-      });
+      const handleNameBlur = () => {
+        const newEditingStates = [...editingStates];
+        newEditingStates[index] = false;
+        setEditingStates(newEditingStates);
 
-      setNewMealSection({ name: "", order: "" });
-    }
-  };
+        if (editedName !== item.name) {
+          // Save the updated name locally
+          updateMealName(item.id, editedName);
+        }
+      };
 
-  useEffect(() => {
-    console.log(mealSections);
-  }, [mealSections]);
+      const isPlaceholder = item.name === "";
 
-  const renderMealSectionItem = ({ item, drag, isActive }) => {
-    const [isEditing, setEditing] = useState(false);
-    const [editedName, setEditedName] = useState(item.name);
-
-    const handleNameClick = () => {
-      if (!isEditing) {
-        setEditing(true);
-      }
-    };
-
-    const handleNameChange = (newName) => {
-      setEditedName(newName);
-    };
-
-    const handleNameBlur = () => {
-      setEditing(false);
-      if (editedName !== item.name) {
-        // Save the updated name when blurred
-        updateMealSectionName(item.id, editedName);
-      }
-    };
-
-    return (
-      <TouchableWithoutFeedback disabled={isActive}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TouchableOpacity
-            style={styles.deleteSectionButton}
-            onPress={() => handleDeleteMealSection(item.id)}
-          >
-            <Feather
-              name="trash-2"
-              color={paperTheme.colors.accent}
-              size={18}
-            />
-          </TouchableOpacity>
+      return (
+        <TouchableWithoutFeedback key={item.id}>
           <View
             style={{
-              ...styles.sectionRow,
-              backgroundColor: isActive
-                ? paperTheme.colors.primary
-                : paperTheme.colors.surface,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Text style={styles.sectionOrder} onPress={handleNameClick}>
-              {item.order}
-            </Text>
-            {isEditing ? (
-              <TextInput
-                style={styles.sectionInput}
-                value={editedName}
-                onChangeText={handleNameChange}
-                onBlur={handleNameBlur}
-                autoFocus
-              />
-            ) : (
-              <Text style={styles.sectionInput} onPress={handleNameClick}>
-                {editedName}
-              </Text>
-            )}
-            <TouchableOpacity
-              style={styles.sectionMoveToggle}
-              onLongPress={drag}
-              delayLongPress={100}
+            <View
+              style={{
+                ...styles.sectionRow,
+                backgroundColor: paperTheme.colors.surface,
+              }}
             >
-              <Feather
-                name="align-justify"
-                color={paperTheme.colors.text}
-                size={24}
-              />
-            </TouchableOpacity>
+              <Text
+                style={[
+                  { flex: 1, textAlign: "left" },
+                  isPlaceholder && styles.sectionIdTextNoValue,
+                  !isPlaceholder && styles.sectionIdText,
+                ]}
+                onPress={handleNameClick}
+              >
+                {item.id}
+              </Text>
+              {isEditing ? (
+                <TextInput
+                  style={[styles.sectionInputText]}
+                  value={editedName}
+                  placeholder="New Meal"
+                  placeholderTextColor={"#A9A9A9"}
+                  onChangeText={handleNameChange}
+                  onBlur={handleNameBlur}
+                  autoFocus
+                />
+              ) : (
+                <Text
+                  style={[
+                    isPlaceholder && styles.sectionInputTextNoValue,
+                    !isPlaceholder && styles.sectionInputText,
+                  ]}
+                  onPress={handleNameClick}
+                >
+                  {editedName || (isPlaceholder && "New Meal")}
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+        </TouchableWithoutFeedback>
+      );
+    });
   };
 
   return (
@@ -207,52 +162,8 @@ const MealSectionCustomizationModal = ({
                 />
               </TouchableOpacity>
             </View>
-            <Text style={styles.modalTitle}>Customize Meal Sections</Text>
-            <View style={styles.formContainer}>
-              <Text style={styles.formTitle}>Create A New Meal</Text>
-              <View style={styles.formFieldContainer}>
-                <TextInput
-                  style={styles.formMealInput}
-                  placeholder="Meal Name"
-                  placeholderTextColor={paperTheme.colors.text}
-                  value={newMealSection.name}
-                  onChangeText={(text) =>
-                    setNewMealSection({ ...newMealSection, name: text })
-                  }
-                />
-                <TouchableOpacity
-                  style={styles.addMealSectionButton}
-                  onPress={handleAddNewMealSection}
-                >
-                  <Feather
-                    name="plus-circle"
-                    color={paperTheme.colors.primary}
-                    size={24}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={{ flex: 1 }}>
-              <DraggableFlatList
-                data={mealSections}
-                renderItem={renderMealSectionItem}
-                keyExtractor={(item) => item.id}
-                onDragEnd={({ data, from, to }) => {
-                  // Calculate the new order positions for all items
-                  const updatedSections = data.map((item, index) => ({
-                    ...item,
-                    order: index + 1,
-                  }));
-
-                  // Sort the sections based on the updated order
-                  updatedSections.sort((a, b) => a.order - b.order);
-
-                  // Update the mealSections state with the updated order positions
-                  setMealSections(updatedSections);
-                }}
-                contentContainerStyle={{ flexGrow: 1 }}
-              />
-            </View>
+            <Text style={styles.modalTitle}>Customize Meal Names</Text>
+            {renderMealSectionItems()}
           </View>
         </SafeAreaView>
       </TouchableWithoutFeedback>

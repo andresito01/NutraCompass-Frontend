@@ -19,19 +19,8 @@ const foodEntryModalStyles = () => {
     modalContent: {
       flex: 1,
       width: "100%", // Adjust the width
-      // minHeight: "97%", // Adjust the height
-      // maxHeight: "100%", // Set the maximum height of the modal
       backgroundColor: paperTheme.colors.background, // Use theme background color
       padding: 20,
-      // borderColor: paperTheme.colors.primary, // Use theme primary color for border
-      // borderWidth: 2,
-      //shadowColor: paperTheme.colors.text, // Use theme text color for shadow
-      // shadowOpacity: 0.5,
-      // shadowRadius: 5,
-      // shadowOffset: {
-      //   width: 0,
-      //   height: 0,
-      // },
     },
     flatlist: {
       flex: 1,
