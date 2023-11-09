@@ -103,6 +103,7 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
                   { flex: 1, textAlign: "left" },
                   isPlaceholder && styles.sectionIdTextNoValue,
                   !isPlaceholder && styles.sectionIdText,
+                  isEditing && { color: paperTheme.colors.text },
                 ]}
                 onPress={handleNameClick}
               >
@@ -110,10 +111,10 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
               </Text>
               {isEditing ? (
                 <TextInput
-                  style={[styles.sectionInputText]}
+                  style={styles.sectionInputText}
                   value={editedName}
                   placeholder="New Meal"
-                  placeholderTextColor={"#A9A9A9"}
+                  placeholderTextColor={"rgba(169, 169, 169, 0.6)"}
                   onChangeText={handleNameChange}
                   onBlur={handleNameBlur}
                   autoFocus

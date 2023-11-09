@@ -50,7 +50,7 @@ const mealSectionCustomizationModalStyles = () => {
       fontSize: 18,
     },
     sectionIdTextNoValue: {
-      color: "rgba(0, 0, 0, 0.7)", // Light gray color for
+      color: "rgba(169, 169, 169, 0.8)", // Light gray color for
       fontSize: 18,
     },
     sectionInputText: {
@@ -58,7 +58,7 @@ const mealSectionCustomizationModalStyles = () => {
       fontSize: 18,
     },
     sectionInputTextNoValue: {
-      color: "rgba(0, 0, 0, 0.7)", // Light gray color for
+      color: "rgba(169, 169, 169, 0.8)", // Light gray color for
       fontSize: 18,
     },
   });

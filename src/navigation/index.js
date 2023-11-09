@@ -9,7 +9,7 @@ import { useThemeContext } from "../context/ThemeContext.js";
 export default function RootNavigation() {
   const { user } = useAuth();
   const { theme } = useThemeContext();
-  console.log("Status Bar Height: ", StatusBar.currentHeight);
+
   return (
     <PaperProvider theme={theme}>
       <SafeAreaView
