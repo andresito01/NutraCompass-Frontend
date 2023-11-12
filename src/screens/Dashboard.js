@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext.js";
 import { useTheme } from "react-native-paper"; // Import useTheme from react-native-paper
 import dashboardScreenStyles from "./styles/dashboardScreenStyles.js"; // Import your styles
 

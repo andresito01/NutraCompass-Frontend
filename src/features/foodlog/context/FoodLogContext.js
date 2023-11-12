@@ -5,10 +5,23 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { useAuth } from "../../../hooks/useAuth.js";
+import {
+  addDoc,
+  deleteDoc,
+  collection,
+  doc,
+  updateDoc,
+  getDocs,
+  setDoc,
+  serverTimestamp,
+  query,
+  where,
+  writeBatch,
+} from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { useAuth } from "../../../context/AuthContext.js";
 import { db } from "../../../config/firebase.js";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import uuid from "react-native-uuid";
+// import uuid from "react-native-uuid";
 
 const FoodLogContext = createContext();
 
@@ -17,30 +30,214 @@ export function useFoodLog() {
 }
 
 export function FoodLogProvider({ children }) {
-  const defaultMealSections = Array(6)
-    .fill(null)
-    .map((_, index) => ({
-      id: `Meal ${index + 1}`,
-      name: index < 3 ? ["Breakfast", "Lunch", "Dinner"][index] : "",
-    }));
+  const { user } = useAuth();
+  const userId = user?.uid;
 
-  const [mealSections, setMealSections] = useState(defaultMealSections);
-
-  const initialFoodEntries = Object.fromEntries(
-    mealSections.map((section) => [section.id, []])
+  const [mealSections, setMealSections] = useState([]);
+  const [foodEntries, setFoodEntries] = useState({});
+  const customMealSectionsCollectionRef = collection(
+    db,
+    `users/${userId}/customMealSections`
   );
-
-  const [foodEntries, setFoodEntries] = useState(initialFoodEntries);
-
-  const { user } = useAuth(); // If you're using an authentication context
 
   console.log("Meal Sections: ", mealSections);
   console.log("Food Entries: ", foodEntries);
 
+  useEffect(() => {
+    const initializeData = async () => {
+      await initializeFirestoreWithInitialMealSections();
+      await loadMealSectionCustomizations();
+    };
+
+    if (user) {
+      initializeData();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (mealSections.length > 0) {
+      loadFoodEntries();
+    }
+  }, [mealSections]);
+
+  /** MEAL NAME INITIALIZATION AND CUSTOMIZATION METHODS  **/
+
+  // Function to initialize Firestore with initial meal sections
+  const initializeFirestoreWithInitialMealSections = async () => {
+    try {
+      const querySnapshot = await getDocs(customMealSectionsCollectionRef);
+      if (querySnapshot.empty) {
+        const batch = [];
+        const initialMealSections = Array(6)
+          .fill(null)
+          .map((_, index) => ({
+            id: `Meal ${index + 1}`,
+            name: index < 3 ? ["Breakfast", "Lunch", "Dinner"][index] : "",
+          }));
+
+        for (let index = 0; index < initialMealSections.length; index++) {
+          const mealSection = initialMealSections[index];
+          const mealSectionDocRef = doc(
+            customMealSectionsCollectionRef,
+            mealSection.id
+          );
+          batch.push(setDoc(mealSectionDocRef, mealSection));
+        }
+
+        await Promise.all(batch);
+      }
+    } catch (error) {
+      console.error("Error creating initial customMealSections:", error);
+    }
+  };
+
+  // Function to load meal section customizations from Firestore and update the local state
+  const loadMealSectionCustomizations = async () => {
+    try {
+      const querySnapshot = await getDocs(customMealSectionsCollectionRef);
+      const customMealSections = [];
+
+      querySnapshot.forEach((doc) => {
+        customMealSections.push({
+          id: doc.id,
+          name: doc.data().name || "",
+        });
+      });
+
+      setMealSections(customMealSections);
+    } catch (error) {
+      console.error("Error loading meal section customizations:", error);
+    }
+  };
+
+  // Function to update Firestore with multiple meal section name changes
+  const updateMealSectionNames = async (mealSectionUpdates) => {
+    const batch = writeBatch(db); // Create a batch
+
+    mealSectionUpdates.forEach((update) => {
+      const mealSectionDocRef = doc(
+        customMealSectionsCollectionRef,
+        update.mealSectionId
+      );
+      const updateData = { name: update.newName };
+      batch.update(mealSectionDocRef, updateData);
+    });
+
+    try {
+      console.log("Batch to Commit: ", batch);
+      await batch.commit();
+      // Update the local state with the changes
+      setMealSections((prevSections) =>
+        prevSections.map((section) => {
+          const matchingUpdate = mealSectionUpdates.find(
+            (update) => update.mealSectionId === section.id
+          );
+          if (matchingUpdate) {
+            return { ...section, name: matchingUpdate.newName };
+          }
+          return section;
+        })
+      );
+    } catch (error) {
+      console.error("Error updating meal section names in Firestore:", error);
+    }
+  };
+
   /** FOOD ENTRY METHODS **/
 
+  // Load food entries for all meal sections
+  const loadFoodEntries = async () => {
+    // Check if there are valid meal sections
+    console.log(
+      "Meal Sections in LoadFoodEntries: ",
+      JSON.stringify(mealSections)
+    );
+    if (mealSections.length === 0) {
+      console.error("No meal sections available.");
+      return;
+    }
+
+    const foodLogEntriesCollectionRef = collection(
+      db,
+      `users/${userId}/foodLogEntries`
+    );
+
+    try {
+      const updatedEntries = {};
+
+      for (const section of mealSections) {
+        const mealType = section.id;
+
+        const querySnapshot = await getDocs(
+          query(foodLogEntriesCollectionRef, where("mealType", "==", mealType))
+        );
+
+        const entries = [];
+
+        querySnapshot.forEach((doc) => {
+          entries.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Create a shallow copy of the previous state
+        updatedEntries[mealType] = entries;
+      }
+
+      // Update the local state with the loaded entries for all meal sections
+      setFoodEntries(updatedEntries);
+    } catch (error) {
+      console.error("Error loading food entries:", error);
+      // Handle the error gracefully, e.g., show a message to the user
+    }
+  };
+
+  // Load food entries for a specific meal section
+  const loadFoodEntriesForSpecificMealType = async (mealType) => {
+    console.log(mealType);
+    // Check if the mealType is valid
+    if (!mealSections.some((section) => section.id === mealType)) {
+      console.error("Invalid mealType:", mealType);
+      return;
+    }
+
+    const foodLogEntriesCollectionRef = collection(
+      db,
+      `users/${userId}/foodLogEntries`
+    );
+
+    try {
+      const querySnapshot = await getDocs(
+        query(foodLogEntriesCollectionRef, where("mealType", "==", mealType))
+      );
+
+      const entries = [];
+
+      querySnapshot.forEach((doc) => {
+        entries.push({ id: doc.id, ...doc.data() });
+      });
+
+      // Update the local state with the loaded entries
+      setFoodEntries((prevEntries) => {
+        // Create a shallow copy of the previous state
+        const updatedEntries = { ...prevEntries };
+
+        // Check if the mealType exists in the previous state; if not, initialize it as an empty array
+        if (!updatedEntries[mealType]) {
+          updatedEntries[mealType] = [];
+        }
+
+        // Add the new entry to the mealType array
+        updatedEntries[mealType].push({ id: docRef.id, ...newEntry });
+
+        return updatedEntries;
+      });
+    } catch (error) {
+      console.error("Error loading food entries:", error);
+      // Handle the error gracefully, e.g., show a message to the user
+    }
+  };
+
   // Function to save a food log entry
-  const saveFoodLogEntry = (
+  const saveFoodLogEntry = async (
     mealType,
     newFoodName,
     newFoodCalories,
@@ -48,51 +245,97 @@ export function FoodLogProvider({ children }) {
   ) => {
     // Ensure that the meal section is valid
     if (mealSections.some((section) => section.id === mealType)) {
-      // Generate a unique ID
-      const uniqueId = `${uuid.v4()}_${selectedDate}`;
+      try {
+        // Create a new entry object
+        const newEntry = {
+          foodName: newFoodName,
+          foodCalories: newFoodCalories,
+          mealType: mealType,
+          date: selectedDate,
+          timestamp: serverTimestamp(),
+        };
 
-      // Create a new entry
-      const newEntry = {
-        id: uniqueId,
-        foodName: newFoodName,
-        foodCalories: newFoodCalories,
-        date: selectedDate,
-      };
+        const foodLogEntriesCollectionRef = collection(
+          db,
+          "users/" + userId + "/foodLogEntries"
+        );
 
-      // Update the local state with the new entry
-      setFoodEntries((prevEntries) => ({
-        ...prevEntries,
-        [mealType]: [...prevEntries[mealType], newEntry],
-      }));
+        // Add the entry to firestore
+        const docRef = await addDoc(foodLogEntriesCollectionRef, newEntry);
+
+        console.log("New Food Entry: ", JSON.stringify(newEntry));
+        console.log("Doc Ref Ixd: ", JSON.stringify(docRef.id));
+        console.log(
+          "foodEntries state: ",
+          JSON.stringify(JSON.stringify(foodEntries))
+        );
+
+        // Update the local state with the new entry
+        setFoodEntries((prevEntries) => {
+          // Create a shallow copy of the previous state
+          const updatedEntries = { ...prevEntries };
+
+          // Check if the mealType exists in the previous state; if not, initialize it as an empty array
+          if (!updatedEntries[mealType]) {
+            updatedEntries[mealType] = [];
+          }
+
+          // Add the new entry to the mealType array
+          updatedEntries[mealType].push({ id: docRef.id, ...newEntry });
+
+          return updatedEntries;
+        });
+      } catch (error) {
+        console.error("Error saving food log entry:", error);
+      }
     }
   };
 
   // Function to delete a food entry
-  const deleteFoodEntry = (mealType, entryId) => {
-    // Delete a specific food entry from the specified meal type and date
-    // Update the foodEntries state
-    const updatedEntries = { ...foodEntries };
+  const deleteFoodEntry = async (mealType, entryId) => {
+    try {
+      const foodLogEntriesCollectionRef = collection(
+        db,
+        "users/" + userId + "/foodLogEntries"
+      );
+      const entryDocRef = doc(foodLogEntriesCollectionRef, entryId);
 
-    updatedEntries[mealType] = updatedEntries[mealType].filter((entry) => {
-      return entry.id !== entryId;
-    });
+      // Delete the entry from Firestore
+      await deleteDoc(entryDocRef);
 
-    setFoodEntries(updatedEntries);
+      // Update the local state
+      const updatedEntries = { ...foodEntries };
+      updatedEntries[mealType] = updatedEntries[mealType].filter(
+        (entry) => entry.id !== entryId
+      );
+      setFoodEntries(updatedEntries);
+    } catch (error) {
+      console.error("Error deleting food log entry:", error);
+    }
   };
 
   // Function to edit a food entry
-  const editFoodEntry = (mealType, entryId, updatedEntry) => {
-    // Edit a food entry in the specified meal type
-    // Update the foodEntries state
-    const updatedEntries = { ...foodEntries };
-    updatedEntries[mealType] = updatedEntries[mealType].map((entry) => {
-      if (entry.id === entryId) {
-        return updatedEntry;
-      }
-      return entry;
-    });
-    setFoodEntries(updatedEntries);
-  };
+  // const editFoodEntry = async (mealType, entryId, updatedEntry) => {
+  //   try {
+  //     const foodLogEntriesCollectionRef = collection(
+  //       db,
+  //       "users/" + userId + "/foodLogEntries"
+  //     );
+  //     const entryDocRef = doc(foodLogEntriesCollectionRef, entryId);
+
+  //     // Update the entry in Firestore
+  //     await setDoc(entryDocRef, updatedEntry, { merge: true });
+
+  //     // Update the local state
+  //     const updatedEntries = { ...foodEntries };
+  //     updatedEntries[mealType] = updatedEntries[mealType].map((entry) =>
+  //       entry.id === entryId ? { ...entry, ...updatedEntry } : entry
+  //     );
+  //     setFoodEntries(updatedEntries);
+  //   } catch (error) {
+  //     console.error("Error editing food log entry:", error);
+  //   }
+  // };
 
   const contextValue = useMemo(() => {
     return {
@@ -100,18 +343,22 @@ export function FoodLogProvider({ children }) {
       setMealSections,
       foodEntries,
       setFoodEntries,
+      loadMealSectionCustomizations,
+      updateMealSectionNames,
       saveFoodLogEntry,
       deleteFoodEntry,
-      editFoodEntry,
+      //editFoodEntry,
     };
   }, [
     mealSections,
     setMealSections,
     foodEntries,
     setFoodEntries,
+    loadMealSectionCustomizations,
+    updateMealSectionNames,
     saveFoodLogEntry,
     deleteFoodEntry,
-    editFoodEntry,
+    //editFoodEntry,
   ]);
 
   return (

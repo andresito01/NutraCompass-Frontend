@@ -17,45 +17,65 @@ import Feather from "react-native-vector-icons/Feather";
 const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
   const styles = mealSectionCustomizationModalStyles();
   const paperTheme = useTheme();
-  const { mealSections, setMealSections } = useFoodLog();
+  const {
+    mealSections,
+    setMealSections,
+    loadMealSectionCustomizations,
+    updateMealSectionNames,
+  } = useFoodLog();
 
   const [localMealSections, setLocalMealSections] = useState([...mealSections]);
+  const [tempMealSections, setTempMealSections] = useState([...mealSections]);
   const [editingStates, setEditingStates] = useState(
     localMealSections.map(() => false)
   );
 
+  console.log("Is Visible: " + isVisible);
   useEffect(() => {
-    // Reset localMealSections and editingStates when modal opens or closes
+    console.log("Meal Customization Modal Effect executed");
+
+    // Load meal section customizations when the modal opens
     if (isVisible) {
+      loadMealSectionCustomizations();
       setLocalMealSections([...mealSections]);
+      setTempMealSections([...mealSections]);
       setEditingStates(localMealSections.map(() => false));
     }
-  }, [isVisible, mealSections]);
+  }, [isVisible]);
 
   const handleCloseModal = () => {
+    setTempMealSections([...localMealSections]); // Reset temp state to local state
     closeModal();
   };
 
-  const updateMealName = (mealId, newName) => {
-    const updatedSections = localMealSections.map((section) => {
+  const updateTempMealName = (mealId, newName) => {
+    const updatedSections = tempMealSections.map((section) => {
       if (section.id === mealId) {
         return { ...section, name: newName };
       }
       return section;
     });
-    setLocalMealSections(updatedSections);
+    setTempMealSections(updatedSections);
   };
 
-  const handleSaveCustomizations = () => {
+  const handleSaveCustomizations = async () => {
+    // Create an array of objects with updates
+    const mealSectionUpdates = localMealSections.map((section, index) => ({
+      mealSectionId: section.id,
+      newName: tempMealSections[index].name,
+    }));
+
     // Update the global mealSections state in FoodLogContext
-    setMealSections(localMealSections);
+    updateMealSectionNames(mealSectionUpdates);
+
+    // Close the modal
     handleCloseModal();
   };
 
   const renderMealSectionItems = () => {
     return localMealSections.map((item, index) => {
       const isEditing = editingStates[index];
-      const editedName = item.name;
+      const editedName = tempMealSections[index].name;
 
       const handleNameClick = () => {
         const newEditingStates = [...editingStates];
@@ -64,10 +84,10 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
       };
 
       const handleNameChange = (newName) => {
-        // Update the name locally
-        const updatedSections = [...localMealSections];
+        // Update the name in the temporary state
+        const updatedSections = [...tempMealSections];
         updatedSections[index] = { ...item, name: newName };
-        setLocalMealSections(updatedSections);
+        setTempMealSections(updatedSections);
       };
 
       const handleNameBlur = () => {
@@ -77,7 +97,7 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
 
         if (editedName !== item.name) {
           // Save the updated name locally
-          updateMealName(item.id, editedName);
+          updateTempMealName(item.id, editedName);
         }
       };
 
@@ -114,7 +134,7 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
                   style={styles.sectionInputText}
                   value={editedName}
                   placeholder="New Meal"
-                  placeholderTextColor={"rgba(169, 169, 169, 0.6)"}
+                  placeholderTextColor={"rgba(169, 169, 169, 0.8)"}
                   onChangeText={handleNameChange}
                   onBlur={handleNameBlur}
                   autoFocus

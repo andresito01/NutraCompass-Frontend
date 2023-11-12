@@ -10,13 +10,17 @@ import apiKeys from "./keys.js";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
-// Initialize Firebase
-const app = initializeApp(apiKeys.firebaseConfig);
+// Initialize Firebase and Firestore
+let app, auth, db;
 
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
-
-const db = getFirestore(app);
+try {
+  app = initializeApp(apiKeys.firebaseConfig);
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+  db = getFirestore(app);
+} catch (error) {
+  console.error("Firebase initialization error", error);
+}
 
 export { auth, db };

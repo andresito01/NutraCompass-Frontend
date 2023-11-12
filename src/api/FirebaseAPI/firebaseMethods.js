@@ -6,7 +6,6 @@ import { Alert } from "react-native";
 // ALL METHODS ENGAGE WITH FIREBASE AND FIRESTORE DATABASE
 
 // User Authentication Methods
-// Removing dob from method params
 export async function registration(firstName, lastName, email, password) {
   try {
     await fb.createUserWithEmailAndPassword(auth, email, password);
@@ -41,5 +40,3 @@ export async function loggingOut() {
     Alert.alert("There is something wrong!", err.message);
   }
 }
-
-// Food Log Methods

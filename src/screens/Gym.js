@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext.js";
 import { useNavigation } from "@react-navigation/native";
 import Feather from "react-native-vector-icons/Feather";
 import { useTheme } from "react-native-paper"; // Import useTheme from react-native-paper
