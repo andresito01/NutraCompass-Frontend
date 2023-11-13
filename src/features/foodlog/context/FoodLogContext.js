@@ -124,7 +124,6 @@ export function FoodLogProvider({ children }) {
     });
 
     try {
-      console.log("Batch to Commit: ", batch);
       await batch.commit();
       // Update the local state with the changes
       setMealSections((prevSections) =>
@@ -148,10 +147,6 @@ export function FoodLogProvider({ children }) {
   // Load food entries for all meal sections
   const loadFoodEntries = async () => {
     // Check if there are valid meal sections
-    console.log(
-      "Meal Sections in LoadFoodEntries: ",
-      JSON.stringify(mealSections)
-    );
     if (mealSections.length === 0) {
       console.error("No meal sections available.");
       return;
@@ -262,13 +257,6 @@ export function FoodLogProvider({ children }) {
 
         // Add the entry to firestore
         const docRef = await addDoc(foodLogEntriesCollectionRef, newEntry);
-
-        console.log("New Food Entry: ", JSON.stringify(newEntry));
-        console.log("Doc Ref Ixd: ", JSON.stringify(docRef.id));
-        console.log(
-          "foodEntries state: ",
-          JSON.stringify(JSON.stringify(foodEntries))
-        );
 
         // Update the local state with the new entry
         setFoodEntries((prevEntries) => {

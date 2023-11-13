@@ -86,10 +86,10 @@ export default function FoodDiaryScreen() {
       filteredEntriesByMeal[section.id] = foodEntries[section.id].filter(
         (entry) => entry.date === selectedDate
       );
-      console.log(
-        `Entries for ${section.name}:`,
-        filteredEntriesByMeal[section.id]
-      );
+      // console.log(
+      //   `Entries for ${section.name}:`,
+      //   filteredEntriesByMeal[section.id]
+      // );
     }
   });
 

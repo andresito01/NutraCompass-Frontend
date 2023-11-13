@@ -1,3 +1,10 @@
+/**
+ * Not to self regarding bugs to fix:
+ * - When an empty string is changed to a string with a length greater than zero then the id text color should always be white even when that text input is not in focus, and the name text color should always be green even when that text input is not in focus.
+ * - id text color should be white when the text input is in focus or when the name text isnt an empty string
+ * -
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   Modal,
@@ -30,7 +37,6 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
     localMealSections.map(() => false)
   );
 
-  console.log("Is Visible: " + isVisible);
   useEffect(() => {
     console.log("Meal Customization Modal Effect executed");
 
@@ -76,6 +82,7 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
     return localMealSections.map((item, index) => {
       const isEditing = editingStates[index];
       const editedName = tempMealSections[index].name;
+      const placeholderText = "New Meal";
 
       const handleNameClick = () => {
         const newEditingStates = [...editingStates];
@@ -101,8 +108,6 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
         }
       };
 
-      const isPlaceholder = item.name === "";
-
       return (
         <TouchableWithoutFeedback key={item.id}>
           <View
@@ -120,36 +125,26 @@ const MealSectionCustomizationModal = ({ isVisible, closeModal }) => {
             >
               <Text
                 style={[
-                  { flex: 1, textAlign: "left" },
-                  isPlaceholder && styles.sectionIdTextNoValue,
-                  !isPlaceholder && styles.sectionIdText,
-                  isEditing && { color: paperTheme.colors.text },
+                  { textAlign: "left" },
+                  styles.sectionIdText,
+                  !editedName && { color: "rgba(169, 169, 169, 0.8)" },
                 ]}
                 onPress={handleNameClick}
               >
                 {item.id}
               </Text>
-              {isEditing ? (
-                <TextInput
-                  style={styles.sectionInputText}
-                  value={editedName}
-                  placeholder="New Meal"
-                  placeholderTextColor={"rgba(169, 169, 169, 0.8)"}
-                  onChangeText={handleNameChange}
-                  onBlur={handleNameBlur}
-                  autoFocus
-                />
-              ) : (
-                <Text
-                  style={[
-                    isPlaceholder && styles.sectionInputTextNoValue,
-                    !isPlaceholder && styles.sectionInputText,
-                  ]}
-                  onPress={handleNameClick}
-                >
-                  {editedName || (isPlaceholder && "New Meal")}
-                </Text>
-              )}
+              <TextInput
+                style={{
+                  ...styles.sectionInputText,
+                  flex: 1,
+                  textAlign: "right",
+                }}
+                value={editedName}
+                placeholder={placeholderText}
+                placeholderTextColor={"rgba(169, 169, 169, 0.8)"}
+                onChangeText={handleNameChange}
+                onBlur={handleNameBlur}
+              />
             </View>
           </View>
         </TouchableWithoutFeedback>

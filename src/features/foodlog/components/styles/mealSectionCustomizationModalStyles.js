@@ -49,16 +49,8 @@ const mealSectionCustomizationModalStyles = () => {
       color: paperTheme.colors.text,
       fontSize: 18,
     },
-    sectionIdTextNoValue: {
-      color: "rgba(169, 169, 169, 0.8)", // Light gray color for
-      fontSize: 18,
-    },
     sectionInputText: {
       color: paperTheme.colors.primary,
-      fontSize: 18,
-    },
-    sectionInputTextNoValue: {
-      color: "rgba(169, 169, 169, 0.8)", // Light gray color for
       fontSize: 18,
     },
   });
