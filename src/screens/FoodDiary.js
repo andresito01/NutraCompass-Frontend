@@ -1,20 +1,26 @@
 import React, { useState } from "react";
 import { Text, View, SafeAreaView, ScrollView } from "react-native";
-import { useTheme, Card, Button } from "react-native-paper"; // Import Paper components
+import { useTheme, Card, Button, ProgressBar } from "react-native-paper"; // Import Paper components
 import { useIsFocused } from "@react-navigation/native";
-import FoodEntryModal from "../features/foodlog/components/FoodEntryModal.js";
-import MealSectionCustomizationModal from "../features/foodlog/components/MealSectionCustomizationModal.js";
-import DailyNutritionGoalsCustomizationModal from "../features/foodlog/components/DailyNutritionGoalsCustomizationModal.js";
+import FoodEntryModal from "../features/foodDiary/components/FoodEntryModal.js";
+import MealSectionCustomizationModal from "../features/foodDiary/components/MealSectionCustomizationModal.js";
+import DailyNutritionGoalsCustomizationModal from "../features/foodDiary/components/DailyNutritionGoalsCustomizationModal.js";
+import FoodNutrientModal from "../features/foodDiary/components/FoodNutrientModal.js";
 import foodDiaryScreenStyles from "./styles/foodDiaryScreenStyles.js";
-import FoodEntryList from "../features/foodlog/components/FoodEntryList.js";
-import DateSelector from "../features/foodlog/components/DateSelector.js";
-import FoodlogFabGroupMenu from "../features/foodlog/components/FabGroupMenu.js";
-import { useFoodLog } from "../features/foodlog/context/FoodLogContext.js";
+import FoodEntryList from "../features/foodDiary/components/FoodEntryList.js";
+import DateSelector from "../features/foodDiary/components/DateSelector.js";
+import FoodlogFabGroupMenu from "../features/foodDiary/components/FabGroupMenu.js";
+import { useFoodLog } from "../features/foodDiary/context/FoodLogContext.js";
+import { useUserSettings } from "../features/userSettings/context/UserSettingsContext.js";
 
 export default function FoodDiaryScreen() {
   const styles = foodDiaryScreenStyles(); // Use the imported styles
+  const paperTheme = useTheme();
 
   const { mealSections, foodEntries, saveFoodLogEntry } = useFoodLog();
+
+  const { getNutritionalGoals } = useUserSettings();
+  const { calorieGoal } = getNutritionalGoals();
 
   const [activeMealSection, setActiveMealSection] = useState(null);
   const [selectedDate, setSelectedDate] = useState(
@@ -30,6 +36,8 @@ export default function FoodDiaryScreen() {
     isDailyNutritionGoalsCustomizationModalVisible,
     setIsDailyNutritionGoalsCustomizationModalVisible,
   ] = useState(false);
+  const [isFoodNutrientModalVisible, setIsFoodNutrientModalVisible] =
+    useState(false);
 
   const isFocused = useIsFocused(); // Variable to determin whether the FoodLogScreen is the current screen in focus, therefore the FoodlogFabGroupMenu should be visible
 
@@ -80,6 +88,14 @@ export default function FoodDiaryScreen() {
     setIsDailyNutritionGoalsCustomizationModalVisible(true);
   };
 
+  const handleCloseFoodNutrientModal = () => {
+    setIsFoodNutrientModalVisible(false);
+  };
+
+  const handleOpenFoodNutrientModal = () => {
+    setIsFoodNutrientModalVisible(true);
+  };
+
   const filteredEntriesByMeal = {};
   mealSections.forEach((section) => {
     if (foodEntries[section.id]) {
@@ -92,6 +108,11 @@ export default function FoodDiaryScreen() {
       // );
     }
   });
+
+  const calorieProgressBarPercentage =
+    calculateTotalCalories(
+      mealSections.flatMap((section) => filteredEntriesByMeal[section.id])
+    ) / calorieGoal;
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
@@ -114,7 +135,9 @@ export default function FoodDiaryScreen() {
             }}
           >
             <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
-              <Text style={styles.totalDayCalories}>2700 {"      - "}</Text>
+              <Text style={styles.totalDayCalories}>
+                {calorieGoal} {"      - "}
+              </Text>
               <Text style={styles.totalDayCaloriesProgressSectionText}>
                 Goal
               </Text>
@@ -140,7 +163,7 @@ export default function FoodDiaryScreen() {
             </View>
             <View style={{ flexDirection: "column", marginHorizontal: 10 }}>
               <Text style={styles.totalDayCalories}>
-                {2700 -
+                {calorieGoal -
                   calculateTotalCalories(
                     mealSections.flatMap(
                       (section) => filteredEntriesByMeal[section.id]
@@ -152,6 +175,15 @@ export default function FoodDiaryScreen() {
               </Text>
             </View>
           </View>
+          <ProgressBar
+            style={{ marginTop: 20 }}
+            color={
+              calorieProgressBarPercentage > 1.0
+                ? "red"
+                : paperTheme.colors.primary
+            }
+            progress={calorieProgressBarPercentage}
+          />
         </Card.Content>
       </Card>
       <ScrollView
@@ -174,6 +206,7 @@ export default function FoodDiaryScreen() {
                   <FoodEntryList
                     foodEntryItems={filteredEntriesByMeal[section.id]}
                     mealType={section.id}
+                    handleOpenFoodNutrientModal={handleOpenFoodNutrientModal}
                   />
                   <Button
                     style={styles.addButton}
@@ -205,6 +238,13 @@ export default function FoodDiaryScreen() {
           handleSaveEntry(activeMealSection, foodName, calories)
         }
         onCancel={handleCancelEntry}
+        handleOpenFoodNutrientModal={handleOpenFoodNutrientModal}
+      />
+
+      {/* Food Nutrient Modal */}
+      <FoodNutrientModal
+        isVisible={isFoodNutrientModalVisible}
+        closeModal={handleCloseFoodNutrientModal}
       />
 
       {/* Meal Section Customization Modal opens when the Fab Group action button called Customize Meal Names is clicked */}

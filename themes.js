@@ -10,8 +10,8 @@ export const CustomDefaultTheme = {
     ...DefaultTheme.colors,
     primary: "#239B56", // Green color
     accent: "#FF0000", // Red color
-    background: "#FFFFFF", // Light background color (white)
-    surface: "rgba(0, 0, 0, 0.02)",
+    background: "#f5f5f5", // Light background color (white)
+    //surface: "rgba(0, 0, 0, 0.02)",
     border: "rgba(0, 0, 0, 0.1)", // Semi-transparent shadow border for light theme
     text: "#000000", // Set text color to black for light mode
     bottomNavText: "#FFFFFF", // Set text color to white for light mode
@@ -51,7 +51,7 @@ export const CustomDarkTheme = {
     primary: "#239B56", // Green color
     accent: "#FF0000", // Red color
     background: "#121212", // Dark background color
-    //surface: "rgba(0, 0, 0, 0.03)",
+    //surface: "rgba(0, 0, 0, 0.02)",
     border: "rgba(255, 255, 255, 0.1)", // Semi-transparent shadow border for dark theme
     text: "#FFFFFF", // Set text color to white for dark mode
     bottomNavText: "#000000", // Set text color to black for dark mode

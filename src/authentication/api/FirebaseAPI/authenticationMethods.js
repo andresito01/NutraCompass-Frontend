@@ -1,4 +1,4 @@
-import { auth } from "../../config/firebase.js";
+import { auth } from "../../../config/firebase.js";
 import * as fb from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { Alert } from "react-native";

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Text } from "react-native";
-import { useAuth } from "../context/AuthContext.js";
+import { useAuth } from "../authentication/context/AuthContext.js";
 import UserStack from "./userStack";
 import AuthStack from "./authStack";
 import { SafeAreaView, Platform, StatusBar } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import { useThemeContext } from "../context/ThemeContext.js";
-import { FoodLogProvider } from "../features/foodlog/context/FoodLogContext.js";
+import { FoodLogProvider } from "../features/foodDiary/context/FoodLogContext.js";
+import { UserSettingsProvider } from "../features/userSettings/context/UserSettingsContext.js";
+
 export default function RootNavigation() {
   const { user } = useAuth();
   const [authResolved, setAuthResolved] = useState(false);
@@ -29,9 +31,11 @@ export default function RootNavigation() {
       >
         {authResolved ? (
           user ? (
-            <FoodLogProvider>
-              <UserStack />
-            </FoodLogProvider>
+            <UserSettingsProvider>
+              <FoodLogProvider>
+                <UserStack />
+              </FoodLogProvider>
+            </UserSettingsProvider>
           ) : (
             <AuthStack />
           )

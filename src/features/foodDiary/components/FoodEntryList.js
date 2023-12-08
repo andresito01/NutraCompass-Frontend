@@ -3,7 +3,11 @@ import { ScrollView, UIManager, LayoutAnimation } from "react-native";
 import SwipeableFoodEntryItem from "./SwipeableFoodEntryItem.js";
 import { useFoodLog } from "../context/FoodLogContext.js";
 
-const FoodEntryList = ({ foodEntryItems, mealType }) => {
+const FoodEntryList = ({
+  foodEntryItems,
+  mealType,
+  handleOpenFoodNutrientModal,
+}) => {
   const { deleteFoodEntry } = useFoodLog();
 
   //console.log(foodEntryItems);
@@ -18,9 +22,8 @@ const FoodEntryList = ({ foodEntryItems, mealType }) => {
     deleteFoodEntry(mealType, id);
   };
 
-  const handleEdit = (itemId) => {
-    // Implement the edit functionality here
-    console.log("Edit button pressed for item:", itemId);
+  const handleEdit = (id) => {
+    handleOpenFoodNutrientModal();
   };
 
   const renderItems = () => {

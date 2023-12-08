@@ -13,7 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 // Firebase API method imports
 import { useTheme, TextInput, Button } from "react-native-paper";
 import signinScreenStyles from "./styles/signinScreenStyles.js";
-import { signIn } from "../api/FirebaseAPI/firebaseMethods.js";
+import { signIn } from "../authentication/api/FirebaseAPI/authenticationMethods.js";
 import ThemeChanger from "../components/ThemeChanger.js";
 
 function SignInScreen({ navigation }) {

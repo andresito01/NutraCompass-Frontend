@@ -2,7 +2,7 @@ import React from "react";
 import { Text, View, Pressable } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import { useTheme } from "react-native-paper";
-import { loggingOut } from "../api/FirebaseAPI/firebaseMethods.js";
+import { loggingOut } from "../authentication/api/FirebaseAPI/authenticationMethods.js";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import settingsScreenStyles from "./styles/settingsScreenStyles.js";
 import { useThemeContext } from "../context/ThemeContext.js";

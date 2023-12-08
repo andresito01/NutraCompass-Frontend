@@ -15,16 +15,23 @@ import prettyFormat from "pretty-format";
 import Feather from "react-native-vector-icons/Feather";
 import foodEntryModalStyles from "./styles/foodEntryModalStyles.js";
 // Edamam Food Database API Method Imports
-import { searchFood } from "../api/EdamamFoodDatabaseAPI/edamamMethods.js";
+import {
+  searchFood,
+  searchForFoodItemNutrients,
+} from "../api/EdamamFoodDatabaseAPI/edamamMethods.js";
 // Import Barcode Scanner Component
 import BarcodeScanner from "./BarcodeScanner.js";
 
-const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
+const FoodEntryModal = ({
+  isVisible,
+  onSave,
+  onCancel,
+  handleOpenFoodNutrientModal,
+}) => {
   const [foodName, setFoodName] = useState("");
   const foodNameInputRef = useRef(null);
   const [searchResults, setSearchResults] = useState([]);
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
-  const [scannedBarcode, setScannedBarcode] = useState(null);
 
   const styles = foodEntryModalStyles();
   const paperTheme = useTheme(); // Get the current theme
@@ -70,9 +77,12 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
     }
   };
 
-  const handleSelectFood = (selectedFood) => {
+  const handleSelectFood = async (selectedFood) => {
     // Process the selected food and add it to the log
     // For example:
+
+    //console.log("Selected Food: \n" + JSON.stringify(selectedFood));
+
     onSave(
       selectedFood.food.label,
       parseInt(Math.round(selectedFood.food.nutrients.ENERC_KCAL))
@@ -95,6 +105,7 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
   const closeBarcodeScanner = () => {
     setIsBarcodeScannerVisible(false);
   };
+
   return (
     <Modal visible={isVisible} animationType="slide" transparent={true}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -107,7 +118,10 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
                 backgroundColor: paperTheme.colors.background,
               }}
             >
-              <Appbar.BackAction onPress={handleCloseModal} />
+              <Appbar.BackAction
+                color={paperTheme.colors.text}
+                onPress={handleCloseModal}
+              />
               <Appbar.Content title="Add Food" />
             </Appbar.Header>
           </View>
@@ -158,7 +172,10 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
               data={searchResults}
               keyExtractor={(item) => item.food.foodId}
               renderItem={({ item }) => (
-                <View style={styles.foodItemContainer}>
+                <TouchableOpacity
+                  //onPress={handleOpenFoodNutrientModal}
+                  style={styles.foodItemContainer}
+                >
                   <View style={styles.foodInfoContainer}>
                     <Text style={styles.foodLabel}>{item.food.label}</Text>
                     <Text style={styles.foodLabelCalories}>
@@ -181,7 +198,7 @@ const FoodEntryModal = ({ isVisible, onSave, onCancel }) => {
                       size={24}
                     />
                   </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
               )}
             />
           </View>

@@ -15,7 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
 import signupScreenStyles from "./styles/signupScreenStyles.js";
 // Firebase API method imports
-import { registration } from "../api/FirebaseAPI/firebaseMethods.js";
+import { registration } from "../authentication/api/FirebaseAPI/authenticationMethods.js";
 
 function SignUpScreen({ navigation }) {
   const styles = signupScreenStyles(); // Use the imported styles

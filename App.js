@@ -1,7 +1,7 @@
 import "./src/config/firebase.js";
 import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { AuthProvider } from "./src/context/AuthContext.js";
+import { AuthProvider } from "./src/authentication/context/AuthContext.js";
 import RootNavigation from "./src/navigation/index.js";
 import { ThemeProvider } from "./src/context/ThemeContext.js";
 

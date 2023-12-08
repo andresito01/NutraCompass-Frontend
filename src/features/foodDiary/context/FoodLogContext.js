@@ -19,7 +19,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { useAuth } from "../../../context/AuthContext.js";
+import { useAuth } from "../../../authentication/context/AuthContext.js";
 import { db } from "../../../config/firebase.js";
 // import uuid from "react-native-uuid";
 
@@ -40,6 +40,7 @@ export function FoodLogProvider({ children }) {
     `users/${userId}/customMealSections`
   );
 
+  /** Note: These console logs are being executed everytime I change the theme of the app */
   console.log("Meal Sections: ", mealSections);
   console.log("Food Entries: ", foodEntries);
 
